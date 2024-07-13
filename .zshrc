@@ -140,3 +140,16 @@ alias py="python"
 
 # Uncomment if you need to source Atuin environment variables
 # . "$HOME/.atuin/bin/env"
+
+# Function to unmount and mount OneDrive
+fix_onedrive() {
+    echo "Unmounting OneDrive..."
+    umount ~/OneDrive
+    sleep 2
+    echo "Mounting OneDrive..."
+    mount -t smbfs //robertsuarez@d.docs.live.net/OneDrive ~/OneDrive
+    echo "OneDrive has been remounted. Please check if the read-only error is resolved."
+}
+
+# Alias for the fix_onedrive function
+alias fixonedrive='fix_onedrive'
