@@ -2,9 +2,7 @@
 echo "Welcome to Zsh!"
 
 # Set PATH variables
-
-#export PATH="/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$PATH" #former_PATH-20240711
-export PATH="/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$PATH"
+export PATH="/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$BUN_INSTALL/bin:$PATH"
 export NODE_OPTIONS="--max-old-space-size=8192"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -96,8 +94,7 @@ bindkey '^[[B' history-search-forward
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# Start atuin (moved to background loading)
-eval "$(atuin init zsh)"
+# Atuin is already initialized in the background
 
 #test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
@@ -116,15 +113,7 @@ bindkey -s '^r' 'source ~/.zshrc\n'
 
 source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
-# Conda initialize (moved to background loading)
- eval "$(conda 'shell.zsh' 'hook')"
-
-# Bun completions
-[ -s "/Users/robertsuarez/.bun/_bun" ] && source "/Users/robertsuarez/.bun/_bun"
-
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
+# Conda initialization
 >>> conda initialize >>>
 !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
@@ -140,27 +129,14 @@ fi
 unset __conda_setup
 <<< conda initialize <<<
 
-eval 
-            fuck () {
-                TF_PYTHONIOENCODING=$PYTHONIOENCODING;
-                export TF_SHELL=zsh;
-                export TF_ALIAS=fuck;
-                TF_SHELL_ALIASES=$(alias);
-                export TF_SHELL_ALIASES;
-                TF_HISTORY="$(fc -ln -10)";
-                export TF_HISTORY;
-                export PYTHONIOENCODING=utf-8;
-                TF_CMD=$(
-                    thefuck THEFUCK_ARGUMENT_PLACEHOLDER $@
-                ) && eval $TF_CMD;
-                unset TF_HISTORY;
-                export PYTHONIOENCODING=$TF_PYTHONIOENCODING;
-                test -n "$TF_CMD" && print -s $TF_CMD
-            }
-        
+# Bun completions
+[ -s "/Users/robertsuarez/.bun/_bun" ] && source "/Users/robertsuarez/.bun/_bun"
+
+export BUN_INSTALL="$HOME/.bun"
+
 alias py="python"
 
+# thefuck alias is already set up in the background processes
 
-eval $(thefuck --alias)
-
-#. "$HOME/.atuin/bin/env"
+# Uncomment if you need to source Atuin environment variables
+# . "$HOME/.atuin/bin/env"
