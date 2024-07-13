@@ -70,10 +70,12 @@ background() {
 
 background 'eval "$(conda "shell.$(basename "${SHELL}")" hook)"'
 background 'eval $(thefuck --alias fk)'
-background 'eval "$(atuin init zsh)"'
 
 # Zoxide (better cd)
 eval "$(zoxide init zsh)"
+
+# Initialize Atuin
+eval "$(atuin init zsh)"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -93,8 +95,6 @@ bindkey '^[[B' history-search-forward
 
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
-# Atuin is already initialized in the background
 
 #test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
