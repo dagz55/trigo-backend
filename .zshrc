@@ -1,16 +1,13 @@
-# Console output
-echo "Welcome to Zsh!"
-
-# Set PATH variables
-export PATH="/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$BUN_INSTALL/bin:$PATH"
-export NODE_OPTIONS="--max-old-space-size=8192"
-
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
+
+# Set PATH variables
+export PATH="/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$BUN_INSTALL/bin:$PATH"
+export NODE_OPTIONS="--max-old-space-size=8192"
 
 # ---- FZF -----
 
@@ -111,23 +108,12 @@ alias reload='source ~/.zshrc'
 # Bind Ctrl + R to reload .zshrc
 bindkey -s '^r' 'source ~/.zshrc\n'
 
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-
 # Conda initialization
->>> conda initialize >>>
-!! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
+if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+    . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
 else
-    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
-        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
-    fi
+    export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
 fi
-unset __conda_setup
-<<< conda initialize <<<
 
 # Bun completions
 [ -s "/Users/robertsuarez/.bun/_bun" ] && source "/Users/robertsuarez/.bun/_bun"
