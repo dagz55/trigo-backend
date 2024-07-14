@@ -75,8 +75,11 @@ setup_gcloud() {
     fi
     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
     export CLOUDSDK_PYTHON="/usr/bin/python3"
-    safe_source "$gcloud_path/path.zsh.inc"
-    safe_source "$gcloud_path/completion.zsh.inc"
+    export RUST_BACKTRACE=1
+    (
+        RUST_BACKTRACE=1 safe_source "$gcloud_path/path.zsh.inc"
+        RUST_BACKTRACE=1 safe_source "$gcloud_path/completion.zsh.inc"
+    )
 }
 setup_gcloud
 
