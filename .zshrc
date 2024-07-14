@@ -142,15 +142,25 @@ except ImportError as e:
             echo "Checking gcloud.py file..." | tee -a "$log_file"
             python3 -c "
 import sys
+import os
 sys.path.append('/Users/robertsuarez/google-cloud-sdk/lib')
 try:
     import gcloud
     print('gcloud module imported successfully')
     print(f'gcloud module location: {gcloud.__file__}')
+    
+    print('Attempting to import googlecloudsdk.gcloud_main')
+    print(f'Current sys.path: {sys.path}')
+    print(f'PYTHONPATH: {os.environ.get("PYTHONPATH", "Not set")}')
+    
     import googlecloudsdk.gcloud_main
     print('googlecloudsdk.gcloud_main imported successfully')
+    print(f'googlecloudsdk.gcloud_main location: {googlecloudsdk.gcloud_main.__file__}')
 except ImportError as e:
     print(f'Failed to import module: {e}')
+    print('Traceback:')
+    import traceback
+    traceback.print_exc()
 " | tee -a "$log_file"
         fi
     else
