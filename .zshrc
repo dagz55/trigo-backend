@@ -5,6 +5,9 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Remove any welcome message
+unsetopt PROMPT_SP
+
 # Set PATH variables
 export PATH="/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$BUN_INSTALL/bin:$PATH"
 export NODE_OPTIONS="--max-old-space-size=8192"
@@ -139,3 +142,10 @@ fix_onedrive() {
 
 # Alias for the fix_onedrive function
 alias fixonedrive='fix_onedrive'
+
+# Check for and remove any welcome messages from other files
+for file in ~/.zprofile ~/.zshenv ~/.zlogin; do
+    if [ -f "$file" ]; then
+        sed -i '' '/echo.*[Ww]elcome/d' "$file"
+    fi
+done
