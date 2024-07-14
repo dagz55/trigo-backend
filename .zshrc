@@ -59,9 +59,17 @@ safe_source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 safe_source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 safe_source "$HOME/.bun/_bun"
 
-# Load Google Cloud SDK
-safe_source "$HOME/google-cloud-sdk/path.zsh.inc"
-safe_source "$HOME/google-cloud-sdk/completion.zsh.inc"
+# Google Cloud SDK setup
+setup_gcloud() {
+    local gcloud_path="$HOME/google-cloud-sdk"
+    if [[ ! -d "$gcloud_path" ]]; then
+        echo "Google Cloud SDK not found. Installing..."
+        curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
+    fi
+    safe_source "$gcloud_path/path.zsh.inc"
+    safe_source "$gcloud_path/completion.zsh.inc"
+}
+setup_gcloud
 
 # Conda initialization
 if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
