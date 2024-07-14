@@ -71,10 +71,22 @@ setup_gcloud() {
         if [[ $(uname -m) == "arm64" ]]; then
             echo "Detected ARM64 architecture" | tee -a "$log_file"
             curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-437.0.1-darwin-arm.tar.gz | tar xz -C "$HOME" 2>> "$log_file"
+            if [ $? -ne 0 ]; then
+                echo "Failed to download or extract Google Cloud SDK" | tee -a "$log_file"
+                return 1
+            fi
             "$gcloud_path/install.sh" --quiet --command-completion false --path-update false --usage-reporting false 2>> "$log_file"
+            if [ $? -ne 0 ]; then
+                echo "Failed to install Google Cloud SDK" | tee -a "$log_file"
+                return 1
+            fi
         else
             echo "Detected x86_64 architecture" | tee -a "$log_file"
             curl https://sdk.cloud.google.com | bash -s -- --disable-prompts --command-completion false --path-update false --usage-reporting false 2>> "$log_file"
+            if [ $? -ne 0 ]; then
+                echo "Failed to install Google Cloud SDK" | tee -a "$log_file"
+                return 1
+            fi
         fi
     else
         echo "Google Cloud SDK found at $gcloud_path" | tee -a "$log_file"
@@ -89,15 +101,26 @@ setup_gcloud() {
         echo "Successfully sourced path.zsh.inc" | tee -a "$log_file"
     else
         echo "Failed to source path.zsh.inc" | tee -a "$log_file"
+        return 1
     fi
 
     if safe_source "$gcloud_path/completion.zsh.inc" 2>> "$log_file"; then
         echo "Successfully sourced completion.zsh.inc" | tee -a "$log_file"
     else
         echo "Failed to source completion.zsh.inc" | tee -a "$log_file"
+        return 1
     fi
 
     echo "Google Cloud SDK setup completed at $(date)" | tee -a "$log_file"
+    
+    # Verify gcloud installation
+    if command -v gcloud &> /dev/null; then
+        echo "gcloud command is available" | tee -a "$log_file"
+        gcloud --version | tee -a "$log_file"
+    else
+        echo "gcloud command is not available" | tee -a "$log_file"
+        return 1
+    fi
 }
 
 setup_gcloud
