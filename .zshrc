@@ -134,10 +134,22 @@ try:
 except ImportError as e:
     print(f'Failed to import googlecloudsdk.core.properties: {e}')
 " | tee -a "$log_file"
-            gcloud --version
+            echo "Running gcloud with verbose logging..." | tee -a "$log_file"
+            CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud --verbosity=debug --version
         ) 2>&1 | tee -a "$log_file"
         if [ $? -ne 0 ]; then
             echo "Error occurred while running gcloud --version" | tee -a "$log_file"
+            echo "Checking gcloud.py file..." | tee -a "$log_file"
+            python3 -c "
+import sys
+sys.path.append('/Users/robertsuarez/google-cloud-sdk/lib')
+try:
+    import gcloud
+    print('gcloud module imported successfully')
+    print(f'gcloud module location: {gcloud.__file__}')
+except ImportError as e:
+    print(f'Failed to import gcloud module: {e}')
+" | tee -a "$log_file"
         fi
     else
         echo "gcloud command is not available" | tee -a "$log_file"
