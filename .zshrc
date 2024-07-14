@@ -147,8 +147,10 @@ try:
     import gcloud
     print('gcloud module imported successfully')
     print(f'gcloud module location: {gcloud.__file__}')
+    import googlecloudsdk.gcloud_main
+    print('googlecloudsdk.gcloud_main imported successfully')
 except ImportError as e:
-    print(f'Failed to import gcloud module: {e}')
+    print(f'Failed to import module: {e}')
 " | tee -a "$log_file"
         fi
     else
