@@ -66,6 +66,22 @@ setup_gcloud() {
 
     echo "Starting Google Cloud SDK setup at $(date)" > "$log_file"
 
+    # Add debugging for iamcredentials util import
+    python3 -c "
+import sys
+print('Python version:', sys.version)
+print('sys.path:', sys.path)
+try:
+    from googlecloudsdk.api_lib.iamcredentials import util
+    print('Successfully imported googlecloudsdk.api_lib.iamcredentials.util')
+except ImportError as e:
+    print('Failed to import googlecloudsdk.api_lib.iamcredentials.util')
+    print('Error:', str(e))
+    print('Traceback:')
+    import traceback
+    traceback.print_exc()
+" >> "$log_file" 2>&1
+
     if [[ ! -d "$gcloud_path" ]]; then
         echo "Google Cloud SDK not found. Installing..." | tee -a "$log_file"
         if [[ $(uname -m) == "arm64" ]]; then
