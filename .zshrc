@@ -5,17 +5,15 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Source the file with potential console output after instant prompt
+[[ ! -f ~/.zshrc_console_output ]] || source ~/.zshrc_console_output
+
 # Remove any welcome message
 unsetopt PROMPT_SP
 
 # Set PATH variables
 export PATH="/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$BUN_INSTALL/bin:$PATH"
 export NODE_OPTIONS="--max-old-space-size=8192"
-
-# ---- FZF -----
-
-# Set up fzf key bindings and fuzzy completion
-eval "$(fzf --zsh)"
 
 # Use fd instead of fzf
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
