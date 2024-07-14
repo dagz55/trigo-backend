@@ -62,25 +62,44 @@ safe_source "$HOME/.bun/_bun"
 # Google Cloud SDK setup
 setup_gcloud() {
     local gcloud_path="$HOME/google-cloud-sdk"
+    local log_file="$HOME/gcloud_setup.log"
+
+    echo "Starting Google Cloud SDK setup at $(date)" > "$log_file"
+
     if [[ ! -d "$gcloud_path" ]]; then
-        echo "Google Cloud SDK not found. Installing..."
+        echo "Google Cloud SDK not found. Installing..." | tee -a "$log_file"
         if [[ $(uname -m) == "arm64" ]]; then
-            # For ARM64 architecture
-            curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-437.0.1-darwin-arm.tar.gz | tar xz -C "$HOME"
-            "$gcloud_path/install.sh" --quiet --command-completion false --path-update false --usage-reporting false
+            echo "Detected ARM64 architecture" | tee -a "$log_file"
+            curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-437.0.1-darwin-arm.tar.gz | tar xz -C "$HOME" 2>> "$log_file"
+            "$gcloud_path/install.sh" --quiet --command-completion false --path-update false --usage-reporting false 2>> "$log_file"
         else
-            # For x86_64 architecture
-            curl https://sdk.cloud.google.com | bash -s -- --disable-prompts --command-completion false --path-update false --usage-reporting false
+            echo "Detected x86_64 architecture" | tee -a "$log_file"
+            curl https://sdk.cloud.google.com | bash -s -- --disable-prompts --command-completion false --path-update false --usage-reporting false 2>> "$log_file"
         fi
+    else
+        echo "Google Cloud SDK found at $gcloud_path" | tee -a "$log_file"
     fi
+
     export USE_GKE_GCLOUD_AUTH_PLUGIN=True
     export CLOUDSDK_PYTHON="/usr/bin/python3"
     export RUST_BACKTRACE=1
-    (
-        RUST_BACKTRACE=1 safe_source "$gcloud_path/path.zsh.inc"
-        RUST_BACKTRACE=1 safe_source "$gcloud_path/completion.zsh.inc"
-    )
+
+    echo "Sourcing Google Cloud SDK files..." | tee -a "$log_file"
+    if safe_source "$gcloud_path/path.zsh.inc" 2>> "$log_file"; then
+        echo "Successfully sourced path.zsh.inc" | tee -a "$log_file"
+    else
+        echo "Failed to source path.zsh.inc" | tee -a "$log_file"
+    fi
+
+    if safe_source "$gcloud_path/completion.zsh.inc" 2>> "$log_file"; then
+        echo "Successfully sourced completion.zsh.inc" | tee -a "$log_file"
+    else
+        echo "Failed to source completion.zsh.inc" | tee -a "$log_file"
+    fi
+
+    echo "Google Cloud SDK setup completed at $(date)" | tee -a "$log_file"
 }
+
 setup_gcloud
 
 # Conda initialization
