@@ -64,12 +64,22 @@ setup_gcloud() {
     local gcloud_path="$HOME/google-cloud-sdk"
     if [[ ! -d "$gcloud_path" ]]; then
         echo "Google Cloud SDK not found. Installing..."
-        curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
+        if [[ $(uname -m) == "arm64" ]]; then
+            # For ARM64 architecture
+            curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-437.0.1-darwin-arm.tar.gz | tar xz -C "$HOME"
+            "$gcloud_path/install.sh" --quiet
+        else
+            # For x86_64 architecture
+            curl https://sdk.cloud.google.com | bash -s -- --disable-prompts
+        fi
     fi
     safe_source "$gcloud_path/path.zsh.inc"
     safe_source "$gcloud_path/completion.zsh.inc"
 }
 setup_gcloud
+
+# Ensure Python is using the correct architecture
+export CLOUDSDK_PYTHON="python3"
 
 # Conda initialization
 if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
