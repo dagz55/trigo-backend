@@ -153,9 +153,14 @@ try:
     print(f'Current sys.path: {sys.path}')
     print(f'PYTHONPATH: {os.environ.get("PYTHONPATH", "Not set")}')
     
+    print('Attempting to import googlecloudsdk.gcloud_main')
     import googlecloudsdk.gcloud_main
     print('googlecloudsdk.gcloud_main imported successfully')
     print(f'googlecloudsdk.gcloud_main location: {googlecloudsdk.gcloud_main.__file__}')
+
+    print('Attempting to import googlecloudsdk.core.credentials.creds_context_managers')
+    from googlecloudsdk.core.credentials import creds_context_managers
+    print('googlecloudsdk.core.credentials.creds_context_managers imported successfully')
 except ImportError as e:
     print(f'Failed to import module: {e}')
     print('Traceback:')
