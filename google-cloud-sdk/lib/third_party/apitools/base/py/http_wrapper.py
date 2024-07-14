@@ -37,6 +37,7 @@ from apitools.base.py import util
 # pylint: disable=ungrouped-imports
 try:
     from oauth2client.client import HttpAccessTokenRefreshError as TokenRefreshError  # noqa
+    from apitools.base.py import http_wrapper
 except ImportError:
     from oauth2client.client import AccessTokenRefreshError as TokenRefreshError  # noqa
 
