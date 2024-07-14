@@ -119,7 +119,21 @@ setup_gcloud() {
         echo "Attempting to run gcloud --version" | tee -a "$log_file"
         (
             set -x
-            python3 -c "import sys; print(sys.path)" | tee -a "$log_file"
+            python3 -c "import sys; print('Python sys.path:', sys.path)" | tee -a "$log_file"
+            python3 -c "import os; print('PYTHONPATH:', os.environ.get('PYTHONPATH', 'Not set'))" | tee -a "$log_file"
+            python3 -c "
+import sys
+try:
+    import google.auth
+    print('google.auth imported successfully')
+except ImportError as e:
+    print(f'Failed to import google.auth: {e}')
+try:
+    from googlecloudsdk.core import properties
+    print('googlecloudsdk.core.properties imported successfully')
+except ImportError as e:
+    print(f'Failed to import googlecloudsdk.core.properties: {e}')
+" | tee -a "$log_file"
             gcloud --version
         ) 2>&1 | tee -a "$log_file"
         if [ $? -ne 0 ]; then
