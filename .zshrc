@@ -159,8 +159,22 @@ try:
     print(f'googlecloudsdk.gcloud_main location: {googlecloudsdk.gcloud_main.__file__}')
 
     print('Attempting to import googlecloudsdk.core.credentials.creds_context_managers')
-    from googlecloudsdk.core.credentials import creds_context_managers
-    print('googlecloudsdk.core.credentials.creds_context_managers imported successfully')
+    try:
+        from googlecloudsdk.core.credentials import creds_context_managers
+        print('googlecloudsdk.core.credentials.creds_context_managers imported successfully')
+        print(f'creds_context_managers location: {creds_context_managers.__file__}')
+    except ImportError as e:
+        print(f'Failed to import googlecloudsdk.core.credentials.creds_context_managers: {e}')
+        print('Traceback:')
+        import traceback
+        traceback.print_exc()
+        
+        print('\nAttempting to read the content of creds_context_managers.py:')
+        try:
+            with open('/Users/robertsuarez/google-cloud-sdk/lib/googlecloudsdk/core/credentials/creds_context_managers.py', 'r') as f:
+                print(f.read())
+        except Exception as read_error:
+            print(f'Failed to read creds_context_managers.py: {read_error}')
 except ImportError as e:
     print(f'Failed to import module: {e}')
     print('Traceback:')
