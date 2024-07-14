@@ -175,6 +175,23 @@ try:
                 print(f.read())
         except Exception as read_error:
             print(f'Failed to read creds_context_managers.py: {read_error}')
+    
+    print('Attempting to import googlecloudsdk.api_lib.iamcredentials.util')
+    try:
+        from googlecloudsdk.api_lib.iamcredentials import util as iamcred_util
+        print('googlecloudsdk.api_lib.iamcredentials.util imported successfully')
+        print(f'iamcred_util location: {iamcred_util.__file__}')
+    except ImportError as e:
+        print(f'Failed to import googlecloudsdk.api_lib.iamcredentials.util: {e}')
+        print('Traceback:')
+        traceback.print_exc()
+        
+        print('\nAttempting to read the content of iamcredentials/util.py:')
+        try:
+            with open('/Users/robertsuarez/google-cloud-sdk/lib/googlecloudsdk/api_lib/iamcredentials/util.py', 'r') as f:
+                print(f.read())
+        except Exception as read_error:
+            print(f'Failed to read iamcredentials/util.py: {read_error}')
 except ImportError as e:
     print(f'Failed to import module: {e}')
     print('Traceback:')
