@@ -116,7 +116,15 @@ setup_gcloud() {
     # Verify gcloud installation
     if command -v gcloud &> /dev/null; then
         echo "gcloud command is available" | tee -a "$log_file"
-        gcloud --version | tee -a "$log_file"
+        echo "Attempting to run gcloud --version" | tee -a "$log_file"
+        (
+            set -x
+            python3 -c "import sys; print(sys.path)" | tee -a "$log_file"
+            gcloud --version
+        ) 2>&1 | tee -a "$log_file"
+        if [ $? -ne 0 ]; then
+            echo "Error occurred while running gcloud --version" | tee -a "$log_file"
+        fi
     else
         echo "gcloud command is not available" | tee -a "$log_file"
         return 1
