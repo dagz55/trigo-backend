@@ -121,6 +121,14 @@ setup_gcloud() {
         echo "gcloud command is not available" | tee -a "$log_file"
         return 1
     fi
+
+    # Check for specific error in gcloud.py
+    if grep -q "File \"/Users/robertsuarez/google-cloud-sdk/lib/gcloud.py\", line 183, in main" "$log_file"; then
+        echo "Detected specific error in gcloud.py. Attempting to fix..." | tee -a "$log_file"
+        # You might want to add specific fix here if you know what's causing the error
+        # For now, we'll just log it
+        echo "Error in gcloud.py detected. Please check the SDK installation." | tee -a "$log_file"
+    fi
 }
 
 setup_gcloud
