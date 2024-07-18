@@ -36,27 +36,35 @@ def send_email(subject, body):
 
 def sign_in():
     current_date = datetime.now(TIMEZONE).strftime("%Y-%m-%d")
-    subject = f"WFH Sign In {current_date}"
+    subject = f"WFH Status: Signed In - {current_date}"
     body = f"""
-    Hi Team,
+Dear Team,
 
-    I am signing in for work from home at {SIGN_IN_TIME}.
+This is to inform you that I have signed in for work from home at {SIGN_IN_TIME}.
 
-    Thanks,
-    [Your Name]
+Date: {current_date}
+Status: Signed In
+Time: {SIGN_IN_TIME}
+
+Best regards,
+[Your Name]
     """
     send_email(subject, body)
 
 def sign_out():
     current_date = datetime.now(TIMEZONE).strftime("%Y-%m-%d")
-    subject = f"WFH Sign Out {current_date}"
+    subject = f"WFH Status: Signed Out - {current_date}"
     body = f"""
-    Hi Team,
+Dear Team,
 
-    I am signing out from work at {SIGN_OUT_TIME}.
+This is to inform you that I have signed out from work at {SIGN_OUT_TIME}.
 
-    Thanks,
-    [Your Name]
+Date: {current_date}
+Status: Signed Out
+Time: {SIGN_OUT_TIME}
+
+Best regards,
+[Your Name]
     """
     send_email(subject, body)
 
