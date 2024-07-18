@@ -50,7 +50,9 @@ def job():
     if current_date >= start_date:
         if current_datetime.time() < scheduled_time.time():
             send_email()
-        schedule.every().day.at("09:30").do(send_email)
+
+# Schedule the job to run daily at 9:30 AM
+schedule.every().day.at("09:30").do(job)
 
 # Run the job immediately when the script starts
 job()
