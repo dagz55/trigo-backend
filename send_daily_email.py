@@ -42,14 +42,18 @@ def send_email():
         server.send_message(message)
 
 def job():
-    current_date = datetime.now(TIMEZONE).date()
+    current_datetime = datetime.now(TIMEZONE)
+    current_date = current_datetime.date()
     start_date = datetime(2024, 7, 21, tzinfo=TIMEZONE).date()
+    scheduled_time = current_datetime.replace(hour=9, minute=30, second=0, microsecond=0)
     
     if current_date >= start_date:
-        send_email()
+        if current_datetime.time() < scheduled_time.time():
+            send_email()
+        schedule.every().day.at("09:30").do(send_email)
 
-# Schedule the job to run daily at 9:30 AM
-schedule.every().day.at("09:30").do(job)
+# Run the job immediately when the script starts
+job()
 
 # Keep the script running
 while True:
