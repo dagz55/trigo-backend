@@ -4,6 +4,10 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 import time
 import schedule
+import pytz
+
+# Set your timezone
+TIMEZONE = pytz.timezone('Asia/Singapore')  # Change this to your desired timezone
 
 def send_email():
     # Email configuration
@@ -17,7 +21,7 @@ def send_email():
     message["To"] = receiver_email
 
     # Get current date and format it
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    current_date = datetime.now(TIMEZONE).strftime("%Y-%m-%d")
     message["Subject"] = f"WFH {current_date}"
 
     # Email body
@@ -38,13 +42,13 @@ def send_email():
         server.send_message(message)
 
 def job():
-    current_date = datetime.now().date()
-    start_date = datetime(2024, 7, 21).date()
+    current_date = datetime.now(TIMEZONE).date()
+    start_date = datetime(2024, 7, 21, tzinfo=TIMEZONE).date()
     
     if current_date >= start_date:
         send_email()
 
-# Schedule the job to run daily at 8:00 AM
+# Schedule the job to run daily at 9:30 AM
 schedule.every().day.at("09:30").do(job)
 
 # Keep the script running
