@@ -10,9 +10,12 @@ import pytz
 TIMEZONE = pytz.timezone('Asia/Singapore')  # Change this to your desired timezone
 
 # Work schedule
-WORK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday']
-SIGN_IN_TIME = "12:00"
-SIGN_OUT_TIME = "21:00"
+WORK_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']
+SIGN_IN_TIME = "09:00"
+SIGN_OUT_TIME = "18:00"
+
+# Automation control
+AUTOMATION_ENABLED = True
 
 def send_email(subject, body):
     # Email configuration
@@ -69,6 +72,10 @@ Best regards,
     send_email(subject, body)
 
 def job():
+    if not AUTOMATION_ENABLED:
+        print("Automation is disabled.")
+        return
+
     current_datetime = datetime.now(TIMEZONE)
     current_day = current_datetime.strftime('%A')
     
@@ -83,6 +90,8 @@ schedule.every().day.at("00:01").do(job)
 job()
 
 # Keep the script running
-while True:
+while AUTOMATION_ENABLED:
     schedule.run_pending()
     time.sleep(60)  # Wait for 60 seconds before checking again
+
+print("Automation has been stopped.")
