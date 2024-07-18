@@ -45,7 +45,7 @@ def job():
         send_email()
 
 # Schedule the job to run daily at 8:00 AM
-schedule.every().day.at("08:00").do(job)
+schedule.every().day.at("09:30").do(job)
 
 # Keep the script running
 while True:
