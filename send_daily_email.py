@@ -9,7 +9,12 @@ import pytz
 # Set your timezone
 TIMEZONE = pytz.timezone('Asia/Singapore')  # Change this to your desired timezone
 
-def send_email():
+# Work schedule
+WORK_DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday']
+SIGN_IN_TIME = "12:00"
+SIGN_OUT_TIME = "21:00"
+
+def send_email(subject, body):
     # Email configuration
     sender_email = "your_email@example.com"
     receiver_email = "recipient@example.com"
@@ -19,20 +24,8 @@ def send_email():
     message = MIMEMultipart()
     message["From"] = sender_email
     message["To"] = receiver_email
+    message["Subject"] = subject
 
-    # Get current date and format it
-    current_date = datetime.now(TIMEZONE).strftime("%Y-%m-%d")
-    message["Subject"] = f"WFH {current_date}"
-
-    # Email body
-    body = """
-    Hi Team,
-
-    I will be working from home today.
-
-    Thanks,
-    [Your Name]
-    """
     message.attach(MIMEText(body, "plain"))
 
     # Create SMTP session
@@ -41,18 +34,42 @@ def send_email():
         server.login(sender_email, password)
         server.send_message(message)
 
+def sign_in():
+    current_date = datetime.now(TIMEZONE).strftime("%Y-%m-%d")
+    subject = f"WFH Sign In {current_date}"
+    body = f"""
+    Hi Team,
+
+    I am signing in for work from home at {SIGN_IN_TIME}.
+
+    Thanks,
+    [Your Name]
+    """
+    send_email(subject, body)
+
+def sign_out():
+    current_date = datetime.now(TIMEZONE).strftime("%Y-%m-%d")
+    subject = f"WFH Sign Out {current_date}"
+    body = f"""
+    Hi Team,
+
+    I am signing out from work at {SIGN_OUT_TIME}.
+
+    Thanks,
+    [Your Name]
+    """
+    send_email(subject, body)
+
 def job():
     current_datetime = datetime.now(TIMEZONE)
-    current_date = current_datetime.date()
-    start_date = datetime(2024, 7, 21, tzinfo=TIMEZONE).date()
-    scheduled_time = current_datetime.replace(hour=9, minute=30, second=0, microsecond=0)
+    current_day = current_datetime.strftime('%A')
     
-    if current_date >= start_date:
-        if current_datetime.time() < scheduled_time.time():
-            send_email()
+    if current_day in WORK_DAYS:
+        schedule.every().day.at(SIGN_IN_TIME).do(sign_in)
+        schedule.every().day.at(SIGN_OUT_TIME).do(sign_out)
 
-# Schedule the job to run daily at 9:30 AM
-schedule.every().day.at("09:30").do(job)
+# Schedule the job to run daily
+schedule.every().day.at("00:01").do(job)
 
 # Run the job immediately when the script starts
 job()
