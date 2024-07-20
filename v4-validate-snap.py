@@ -1,1 +1,1 @@
-# This file is no longer needed. Please use validate_and_delete_snap.py instead.
+# This file is no longer needed. Please use delete-snap.py instead.
