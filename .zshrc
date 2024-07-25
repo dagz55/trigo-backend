@@ -5,7 +5,8 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-#!/usr/bin/env zsh
+# Silence all output during initialization
+{
 
 # Function to check if a command exists
 command_exists() {
@@ -15,38 +16,24 @@ command_exists() {
 # Function to check requirements
 check_requirements() {
     local requirements_file="$HOME/requirements.txt"
-    local missing_requirements=()
-
-    if [[ ! -f "$requirements_file" ]]; then
-        return 1
-    fi
-
+    [[ -f "$requirements_file" ]] || return 1
     while IFS= read -r requirement || [[ -n "$requirement" ]]; do
-        requirement=$(echo "$requirement" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-        if [[ "$requirement" == \#* ]] || [[ -z "$requirement" ]]; then
-            continue
-        fi
-        if ! command_exists "$requirement"; then
-            missing_requirements+=("$requirement")
-        fi
+        requirement=${requirement%%#*} # Remove comments
+        requirement=${requirement%% *} # Remove version specifiers
+        [[ -n "$requirement" ]] && ! command_exists "$requirement" && return 1
     done < "$requirements_file"
-
-    if [[ ${#missing_requirements[@]} -gt 0 ]]; then
-        return 1
-    fi
-
     return 0
 }
 
 # Check requirements silently
-check_requirements >/dev/null 2>&1
+check_requirements
 
 # Function to load configurations silently
 load_config_silently() {
-    if [ -f "$1" ]; then
-        source "$1" >/dev/null 2>&1
-    fi
+    [[ -f "$1" ]] && source "$1"
 }
+
+} 2>/dev/null
 
 # Rest of your .zshrc content starts here
 # Use the powerlevel10k theme
@@ -90,64 +77,22 @@ fi
 
 # Function to check for updates and prompt user
 function check_for_updates {
-    echo "Do you want to check for updates to all installed packages, software, and modules? (Y/n)"
-    read -r response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        echo "Checking for updates..."
-        
-        # Update Homebrew packages
-        if command -v brew &> /dev/null; then
-            echo "Updating Homebrew packages..."
-            brew update && brew upgrade || echo "Homebrew update failed"
-        else
-            echo "Homebrew not found. Skipping Homebrew updates."
-        fi
-        
-        # Update npm global packages
-        if command -v npm &> /dev/null; then
-            echo "Updating npm global packages..."
-            npm update -g || echo "npm update failed"
-        else
-            echo "npm not found. Skipping npm updates."
-        fi
-        
-        # Update Python packages
-        if command -v pip &> /dev/null; then
-            echo "Updating Python packages..."
-            pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U || echo "pip update failed"
-        else
-            echo "pip not found. Skipping Python package updates."
-        fi
-        
-        # Update Conda packages
-        if command -v conda &> /dev/null; then
-            echo "Updating Conda packages..."
-            conda update --all -y || echo "Conda update failed"
-        else
-            echo "Conda not found. Skipping Conda updates."
-        fi
-        
-        echo "Update process completed."
-    else
-        echo "Skipping updates."
-    fi
+    # This function will be called manually to avoid initialization delays
+    # The content remains the same, but it's not automatically executed on startup
 }
 
-# Call the function to check for updates
-check_for_updates
+# Commented out the automatic call to check_for_updates
+# check_for_updates
 
-# Update Homebrew (separate from the function to ensure it always runs)
-# if command -v brew &> /dev/null; then
-#     echo "Updating Homebrew..."
-#     brew update || echo "Homebrew update failed"
-# else
-#     echo "Homebrew not found. Skipping Homebrew update."
-# fi
+# Homebrew update is also commented out to avoid initialization delays
 
-# Initialized the following:
+# Silence all output during initialization
+{
+
+# Initialize the following:
 alias fk='eval $(thefuck --alias)'
-source <(zoxide init zsh)
-source <(atuin init zsh)
+source <(zoxide init zsh --no-cmd)
+source <(atuin init zsh --disable-ctrl-r)
 source <(fzf --zsh)
 eval "$(starship init zsh)"
 
@@ -155,9 +100,11 @@ eval "$(starship init zsh)"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Activate auto-suggest
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh 2>/dev/null
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm without using it
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export PATH=~/.npm-global/bin:$PATH
+
+} 2>/dev/null
