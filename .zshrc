@@ -41,19 +41,20 @@ check_requirements() {
 # Check requirements silently
 check_requirements >/dev/null 2>&1
 
+# Function to load configurations silently
+load_config_silently() {
+    if [ -f "$1" ]; then
+        source "$1" >/dev/null 2>&1
+    fi
+}
+
 # Rest of your .zshrc content starts here
 # Use the powerlevel10k theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
-    . "$HOME/google-cloud-sdk/path.zsh.inc" 
-fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
-    . "$HOME/google-cloud-sdk/completion.zsh.inc" 
-fi
+# Load Google Cloud SDK configurations silently
+load_config_silently "$HOME/google-cloud-sdk/path.zsh.inc"
+load_config_silently "$HOME/google-cloud-sdk/completion.zsh.inc"
 
 # Alias to reload .zshrc
 alias reload='source ~/.zshrc'
@@ -61,34 +62,21 @@ alias reload='source ~/.zshrc'
 # Bind Ctrl + R to reload .zshrc
 bindkey -s '^r' 'source ~/.zshrc\n'
 
-# Source powerlevel10k theme
-if [ -f "/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme" ]; then
-    source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-else
-    echo "Warning: powerlevel10k theme file not found. Please check its installation."
-fi
+# Source powerlevel10k theme silently
+load_config_silently "/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme"
 
 # Conda initialization (simplified)
-if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
-    . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
-else
-    echo "Warning: Conda initialization file not found. Please check Conda installation."
-fi
+load_config_silently "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
 
 # Alias to show hidden files with their permissions, sizes, and sorted by date using eza
 if command -v eza &> /dev/null; then
     alias lsh='eza -la --long --group-directories-first --icons --color=always --sort newest'
 else
-    echo "Warning: eza not found. Using default ls command for lsh alias."
     alias lsh='ls -lah'
 fi
 
 # Bun completions
-if [ -s "$HOME/.bun/_bun" ]; then
-    source "$HOME/.bun/_bun"
-else
-    echo "Warning: Bun completion file not found. Please check Bun installation."
-fi
+load_config_silently "$HOME/.bun/_bun"
 
 # Bun installation path
 export BUN_INSTALL="$HOME/.bun"
@@ -98,8 +86,6 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 if [ -d "/opt/homebrew/opt/openjdk" ]; then
     export JAVA_HOME="/opt/homebrew/opt/openjdk"
     export PATH="$JAVA_HOME/bin:$PATH"
-else
-    echo "Warning: OpenJDK not found. Please check Java installation."
 fi
 
 # Function to check for updates and prompt user
