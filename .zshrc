@@ -1,256 +1,181 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Function to safely source files
-safe_source() {
-    [[ -f "$1" ]] && source "$1"
+#!/usr/bin/env zsh
+
+# Function to check if a command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
 }
 
-# Set PATH variables
-typeset -U path
-path=(
-    "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages"
-    "/Library/Frameworks/Python.framework/Versions/3.12/bin"
-    "/usr/local/bin"
-    "$HOME/.cache/lm-studio/bin"
-    "/opt/homebrew/opt/curl/bin"
-    "$HOME/.local/bin"
-    "$BUN_INSTALL/bin"
-    $path
-)
-export PATH
+# Function to check requirements
+check_requirements() {
+    local requirements_file="$HOME/requirements.txt"
+    local missing_requirements=()
 
-export NODE_OPTIONS="--max-old-space-size=8192"
+    if [[ ! -f "$requirements_file" ]]; then
+        echo "Error: requirements.txt file not found at $requirements_file"
+        return 1
+    fi
 
-# FZF setup
-export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
-export FZF_CTRL_T_OPTS="--preview 'if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi'"
-export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+    while IFS= read -r requirement || [[ -n "$requirement" ]]; do
+        requirement=$(echo "$requirement" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+        if [[ "$requirement" == \#* ]] || [[ -z "$requirement" ]]; then
+            continue
+        fi
+        if ! command_exists "$requirement"; then
+            missing_requirements+=("$requirement")
+        fi
+    done < "$requirements_file"
 
-# History setup
-HISTFILE="$HOME/.zhistory"
-SAVEHIST=100000
-HISTSIZE=10000
-setopt share_history hist_expire_dups_first hist_ignore_dups hist_verify
+    if [[ ${#missing_requirements[@]} -gt 0 ]]; then
+        echo "Warning: The following required tools are missing:"
+        printf ' - %s\n' "${missing_requirements[@]}"
+        echo "Please install them to ensure full functionality of your zsh environment."
+        return 1
+    fi
 
-# Key bindings
-bindkey '^[[A' history-search-backward
-bindkey '^[[B' history-search-forward
+    return 0
+}
+
+# Check requirements
+check_requirements
+
+# Rest of your .zshrc content starts here
+# Use the powerlevel10k theme
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
+    . "$HOME/google-cloud-sdk/path.zsh.inc" 
+fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
+    . "$HOME/google-cloud-sdk/completion.zsh.inc" 
+fi
+
+# Alias to reload .zshrc
+alias reload='source ~/.zshrc'
+
+# Bind Ctrl + R to reload .zshrc
 bindkey -s '^r' 'source ~/.zshrc\n'
 
-# Aliases
-alias ls="eza --color=always --long --git --icons=always --no-user --sort newest"
-alias py="python"
-alias reload='source ~/.zshrc'
-alias fixonedrive='fix_onedrive'
+# Source powerlevel10k theme
+if [ -f "/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme" ]; then
+    source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+else
+    echo "Warning: powerlevel10k theme file not found. Please check its installation."
+fi
 
-# Exports
-export BAT_THEME=tokyonight_night
-export BUN_INSTALL="$HOME/.bun"
-
-# Source files and load plugins
-safe_source ~/.zshrc_console_output
-safe_source ~/.p10k.zsh
-safe_source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-safe_source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-safe_source "$HOME/.bun/_bun"
-
-# Google Cloud SDK setup
-setup_gcloud() {
-    local gcloud_path="$HOME/google-cloud-sdk"
-    local log_file="$HOME/gcloud_setup.log"
-
-    echo "Starting Google Cloud SDK setup at $(date)" > "$log_file"
-
-    # Add debugging for iamcredentials util import
-    python3 -c "
-import sys
-print('Python version:', sys.version)
-print('sys.path:', sys.path)
-try:
-    from googlecloudsdk.api_lib.iamcredentials import util
-    print('Successfully imported googlecloudsdk.api_lib.iamcredentials.util')
-except ImportError as e:
-    print('Failed to import googlecloudsdk.api_lib.iamcredentials.util')
-    print('Error:', str(e))
-    print('Traceback:')
-    import traceback
-    traceback.print_exc()
-" >> "$log_file" 2>&1
-
-    if [[ ! -d "$gcloud_path" ]]; then
-        echo "Google Cloud SDK not found. Installing..." | tee -a "$log_file"
-        if [[ $(uname -m) == "arm64" ]]; then
-            echo "Detected ARM64 architecture" | tee -a "$log_file"
-            curl https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-437.0.1-darwin-arm.tar.gz | tar xz -C "$HOME" 2>> "$log_file"
-            if [ $? -ne 0 ]; then
-                echo "Failed to download or extract Google Cloud SDK" | tee -a "$log_file"
-                return 1
-            fi
-            "$gcloud_path/install.sh" --quiet --command-completion false --path-update false --usage-reporting false 2>> "$log_file"
-            if [ $? -ne 0 ]; then
-                echo "Failed to install Google Cloud SDK" | tee -a "$log_file"
-                return 1
-            fi
-        else
-            echo "Detected x86_64 architecture" | tee -a "$log_file"
-            curl https://sdk.cloud.google.com | bash -s -- --disable-prompts --command-completion false --path-update false --usage-reporting false 2>> "$log_file"
-            if [ $? -ne 0 ]; then
-                echo "Failed to install Google Cloud SDK" | tee -a "$log_file"
-                return 1
-            fi
-        fi
-    else
-        echo "Google Cloud SDK found at $gcloud_path" | tee -a "$log_file"
-    fi
-
-    export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-    export CLOUDSDK_PYTHON="/usr/bin/python3"
-    export RUST_BACKTRACE=1
-
-    echo "Sourcing Google Cloud SDK files..." | tee -a "$log_file"
-    if safe_source "$gcloud_path/path.zsh.inc" 2>> "$log_file"; then
-        echo "Successfully sourced path.zsh.inc" | tee -a "$log_file"
-    else
-        echo "Failed to source path.zsh.inc" | tee -a "$log_file"
-        return 1
-    fi
-
-    if safe_source "$gcloud_path/completion.zsh.inc" 2>> "$log_file"; then
-        echo "Successfully sourced completion.zsh.inc" | tee -a "$log_file"
-    else
-        echo "Failed to source completion.zsh.inc" | tee -a "$log_file"
-        return 1
-    fi
-
-    echo "Google Cloud SDK setup completed at $(date)" | tee -a "$log_file"
-    
-    # Verify gcloud installation
-    if command -v gcloud &> /dev/null; then
-        echo "gcloud command is available" | tee -a "$log_file"
-        echo "Attempting to run gcloud --version" | tee -a "$log_file"
-        (
-            set -x
-            python3 -c "import sys; print('Python sys.path:', sys.path)" | tee -a "$log_file"
-            python3 -c "import os; print('PYTHONPATH:', os.environ.get('PYTHONPATH', 'Not set'))" | tee -a "$log_file"
-            python3 -c "
-import sys
-try:
-    import google.auth
-    print('google.auth imported successfully')
-except ImportError as e:
-    print(f'Failed to import google.auth: {e}')
-try:
-    from googlecloudsdk.core import properties
-    print('googlecloudsdk.core.properties imported successfully')
-except ImportError as e:
-    print(f'Failed to import googlecloudsdk.core.properties: {e}')
-" | tee -a "$log_file"
-            echo "Running gcloud with verbose logging..." | tee -a "$log_file"
-            CLOUDSDK_PYTHON_SITEPACKAGES=1 gcloud --verbosity=debug --version
-        ) 2>&1 | tee -a "$log_file"
-        if [ $? -ne 0 ]; then
-            echo "Error occurred while running gcloud --version" | tee -a "$log_file"
-            echo "Checking gcloud.py file..." | tee -a "$log_file"
-            python3 -c "
-import sys
-import os
-sys.path.append('/Users/robertsuarez/google-cloud-sdk/lib')
-try:
-    import gcloud
-    print('gcloud module imported successfully')
-    print(f'gcloud module location: {gcloud.__file__}')
-    
-    print('Attempting to import googlecloudsdk.gcloud_main')
-    print(f'Current sys.path: {sys.path}')
-    print(f'PYTHONPATH: {os.environ.get("PYTHONPATH", "Not set")}')
-    
-    print('Attempting to import googlecloudsdk.gcloud_main')
-    import googlecloudsdk.gcloud_main
-    print('googlecloudsdk.gcloud_main imported successfully')
-    print(f'googlecloudsdk.gcloud_main location: {googlecloudsdk.gcloud_main.__file__}')
-
-    print('Attempting to import googlecloudsdk.core.credentials.creds_context_managers')
-    try:
-        from googlecloudsdk.core.credentials import creds_context_managers
-        print('googlecloudsdk.core.credentials.creds_context_managers imported successfully')
-        print(f'creds_context_managers location: {creds_context_managers.__file__}')
-    except ImportError as e:
-        print(f'Failed to import googlecloudsdk.core.credentials.creds_context_managers: {e}')
-        print('Traceback:')
-        import traceback
-        traceback.print_exc()
-        
-        print('\nAttempting to read the content of creds_context_managers.py:')
-        try:
-            with open('/Users/robertsuarez/google-cloud-sdk/lib/googlecloudsdk/core/credentials/creds_context_managers.py', 'r') as f:
-                print(f.read())
-        except Exception as read_error:
-            print(f'Failed to read creds_context_managers.py: {read_error}')
-    
-    print('Attempting to import googlecloudsdk.api_lib.iamcredentials.util')
-    try:
-        from googlecloudsdk.api_lib.iamcredentials import util as iamcred_util
-        print('googlecloudsdk.api_lib.iamcredentials.util imported successfully')
-        print(f'iamcred_util location: {iamcred_util.__file__}')
-    except ImportError as e:
-        print(f'Failed to import googlecloudsdk.api_lib.iamcredentials.util: {e}')
-        print('Traceback:')
-        traceback.print_exc()
-        
-        print('\nAttempting to read the content of iamcredentials/util.py:')
-        try:
-            with open('/Users/robertsuarez/google-cloud-sdk/lib/googlecloudsdk/api_lib/iamcredentials/util.py', 'r') as f:
-                print(f.read())
-        except Exception as read_error:
-            print(f'Failed to read iamcredentials/util.py: {read_error}')
-except ImportError as e:
-    print(f'Failed to import module: {e}')
-    print('Traceback:')
-    import traceback
-    traceback.print_exc()
-" | tee -a "$log_file"
-        fi
-    else
-        echo "gcloud command is not available" | tee -a "$log_file"
-        return 1
-    fi
-
-    # Check for specific error in gcloud.py
-    if grep -q "File \"/Users/robertsuarez/google-cloud-sdk/lib/gcloud.py\", line 183, in main" "$log_file"; then
-        echo "Detected specific error in gcloud.py. Attempting to fix..." | tee -a "$log_file"
-        # You might want to add specific fix here if you know what's causing the error
-        # For now, we'll just log it
-        echo "Error in gcloud.py detected. Please check the SDK installation." | tee -a "$log_file"
-    fi
-}
-
-setup_gcloud
-
-# Conda initialization
+# Conda initialization (simplified)
 if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
     . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
 else
-    export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
+    echo "Warning: Conda initialization file not found. Please check Conda installation."
 fi
 
-# Function definitions
-fix_onedrive() {
-    umount ~/OneDrive 2>/dev/null
-    sleep 2
-    mount -t smbfs //robertsuarez@d.docs.live.net/OneDrive ~/OneDrive
+# Alias to show hidden files with their permissions, sizes, and sorted by date using eza
+if command -v eza &> /dev/null; then
+    alias lsh='eza -la --long --group-directories-first --icons --color=always --sort newest'
+else
+    echo "Warning: eza not found. Using default ls command for lsh alias."
+    alias lsh='ls -lah'
+fi
+
+# Bun completions
+if [ -s "$HOME/.bun/_bun" ]; then
+    source "$HOME/.bun/_bun"
+else
+    echo "Warning: Bun completion file not found. Please check Bun installation."
+fi
+
+# Bun installation path
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Java home and path settings
+if [ -d "/opt/homebrew/opt/openjdk" ]; then
+    export JAVA_HOME="/opt/homebrew/opt/openjdk"
+    export PATH="$JAVA_HOME/bin:$PATH"
+else
+    echo "Warning: OpenJDK not found. Please check Java installation."
+fi
+
+# Function to check for updates and prompt user
+function check_for_updates {
+    echo "Do you want to check for updates to all installed packages, software, and modules? (Y/n)"
+    read -r response
+    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        echo "Checking for updates..."
+        
+        # Update Homebrew packages
+        if command -v brew &> /dev/null; then
+            echo "Updating Homebrew packages..."
+            brew update && brew upgrade || echo "Homebrew update failed"
+        else
+            echo "Homebrew not found. Skipping Homebrew updates."
+        fi
+        
+        # Update npm global packages
+        if command -v npm &> /dev/null; then
+            echo "Updating npm global packages..."
+            npm update -g || echo "npm update failed"
+        else
+            echo "npm not found. Skipping npm updates."
+        fi
+        
+        # Update Python packages
+        if command -v pip &> /dev/null; then
+            echo "Updating Python packages..."
+            pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U || echo "pip update failed"
+        else
+            echo "pip not found. Skipping Python package updates."
+        fi
+        
+        # Update Conda packages
+        if command -v conda &> /dev/null; then
+            echo "Updating Conda packages..."
+            conda update --all -y || echo "Conda update failed"
+        else
+            echo "Conda not found. Skipping Conda updates."
+        fi
+        
+        echo "Update process completed."
+    else
+        echo "Skipping updates."
+    fi
 }
 
-# Remove welcome messages
-for file in ~/.zprofile ~/.zshenv ~/.zlogin; do
-    if [ -f "$file" ]; then
-        sed -i '' '/echo.*[Ww]elcome/d' "$file"
-    fi
-done
+# Call the function to check for updates
+check_for_updates
+
+# Update Homebrew (separate from the function to ensure it always runs)
+# if command -v brew &> /dev/null; then
+#     echo "Updating Homebrew..."
+#     brew update || echo "Homebrew update failed"
+# else
+#     echo "Homebrew not found. Skipping Homebrew update."
+# fi
+
+# Initialized the following:
+alias fk='eval $(thefuck --alias)'
+source <(zoxide init zsh)
+source <(atuin init zsh)
+source <(fzf --zsh)
+eval "$(starship init zsh)"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Activate auto-suggest
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH=~/.npm-global/bin:$PATH
