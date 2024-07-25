@@ -1,3 +1,6 @@
+# Redirect all output to /dev/null for the entire file
+{
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -5,43 +8,26 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Silence all output during initialization
-{
-
-# Function to check if a command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
-
 # Function to check requirements
 check_requirements() {
-    local requirements_file="$HOME/requirements.txt"
-    [[ -f "$requirements_file" ]] || return 1
+    [[ -f "$HOME/requirements.txt" ]] || return 1
     while IFS= read -r requirement || [[ -n "$requirement" ]]; do
         requirement=${requirement%%#*} # Remove comments
         requirement=${requirement%% *} # Remove version specifiers
-        [[ -n "$requirement" ]] && ! command_exists "$requirement" && return 1
-    done < "$requirements_file"
+        [[ -n "$requirement" ]] && ! command -v "$requirement" >/dev/null 2>&1 && return 1
+    done < "$HOME/requirements.txt"
     return 0
 }
 
 # Check requirements silently
 check_requirements
 
-# Function to load configurations silently
-load_config_silently() {
-    [[ -f "$1" ]] && source "$1"
-}
-
-} 2>/dev/null
-
-# Rest of your .zshrc content starts here
 # Use the powerlevel10k theme
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
-# Load Google Cloud SDK configurations silently
-load_config_silently "$HOME/google-cloud-sdk/path.zsh.inc"
-load_config_silently "$HOME/google-cloud-sdk/completion.zsh.inc"
+# Load Google Cloud SDK configurations
+[[ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]] && source "$HOME/google-cloud-sdk/path.zsh.inc"
+[[ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]] && source "$HOME/google-cloud-sdk/completion.zsh.inc"
 
 # Alias to reload .zshrc
 alias reload='source ~/.zshrc'
@@ -49,21 +35,21 @@ alias reload='source ~/.zshrc'
 # Bind Ctrl + R to reload .zshrc
 bindkey -s '^r' 'source ~/.zshrc\n'
 
-# Source powerlevel10k theme silently
-load_config_silently "/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme"
+# Source powerlevel10k theme
+[[ -f "/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme" ]] && source "/opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme"
 
 # Conda initialization (simplified)
-load_config_silently "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
+[[ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]] && source "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
 
 # Alias to show hidden files with their permissions, sizes, and sorted by date using eza
-if command -v eza &> /dev/null; then
+if command -v eza >/dev/null 2>&1; then
     alias lsh='eza -la --long --group-directories-first --icons --color=always --sort newest'
 else
     alias lsh='ls -lah'
 fi
 
 # Bun completions
-load_config_silently "$HOME/.bun/_bun"
+[[ -f "$HOME/.bun/_bun" ]] && source "$HOME/.bun/_bun"
 
 # Bun installation path
 export BUN_INSTALL="$HOME/.bun"
@@ -81,14 +67,6 @@ function check_for_updates {
     # The content remains the same, but it's not automatically executed on startup
 }
 
-# Commented out the automatic call to check_for_updates
-# check_for_updates
-
-# Homebrew update is also commented out to avoid initialization delays
-
-# Silence all output during initialization
-{
-
 # Initialize the following:
 alias fk='eval $(thefuck --alias)'
 source <(zoxide init zsh --no-cmd)
@@ -100,11 +78,11 @@ eval "$(starship init zsh)"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Activate auto-suggest
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh 2>/dev/null
+[[ -f "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm without using it
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 export PATH=~/.npm-global/bin:$PATH
 
-} 2>/dev/null
+} >/dev/null 2>&1
