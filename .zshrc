@@ -18,7 +18,6 @@ check_requirements() {
     local missing_requirements=()
 
     if [[ ! -f "$requirements_file" ]]; then
-        echo "Error: requirements.txt file not found at $requirements_file"
         return 1
     fi
 
@@ -33,17 +32,14 @@ check_requirements() {
     done < "$requirements_file"
 
     if [[ ${#missing_requirements[@]} -gt 0 ]]; then
-        echo "Warning: The following required tools are missing:"
-        printf ' - %s\n' "${missing_requirements[@]}"
-        echo "Please install them to ensure full functionality of your zsh environment."
         return 1
     fi
 
     return 0
 }
 
-# Check requirements
-check_requirements
+# Check requirements silently
+check_requirements >/dev/null 2>&1
 
 # Rest of your .zshrc content starts here
 # Use the powerlevel10k theme
