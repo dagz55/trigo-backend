@@ -67,8 +67,8 @@ alias z=zoxide
 
 # Initialize tools
 eval "$(atuin init zsh)"
-eval "$(zoxide init bash|zsh)"
-eval "$(fzf init bash|zsh)"
+eval "$(zoxide init zsh)"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 eval $(thefuck --alias)
 
 # Function to check for updates and prompt user
@@ -113,9 +113,4 @@ else
     fi
 fi
 unset __conda_setup
-# Initialize atuin
-eval "$(atuin init zsh)"
-
 # <<< conda initialize <<<
-
-alias z=zoxide
