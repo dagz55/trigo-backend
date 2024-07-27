@@ -69,7 +69,7 @@ alias z=zoxide
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh)"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-eval $(thefuck --alias)
+# eval $(thefuck --alias)  # Commented out due to potential issues
 
 # Function to check for updates and prompt user
 function check_for_updates {
