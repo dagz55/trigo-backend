@@ -66,7 +66,7 @@ alias lsh='eza -la --long --group-directories-first --icons --color=always --sor
 alias z=zoxide
 
 # Initialize tools
-eval "$(atuin init bash|zsh)"
+eval "$(atuin init zsh)"
 eval "$(zoxide init bash|zsh)"
 eval "$(fzf init bash|zsh)"
 eval $(thefuck --alias)
@@ -113,6 +113,9 @@ else
     fi
 fi
 unset __conda_setup
+# Initialize atuin
+eval "$(atuin init zsh)"
+
 # <<< conda initialize <<<
 
 alias z=zoxide
