@@ -80,7 +80,12 @@ function check_for_updates {
         # Update Homebrew packages
         brew update && brew upgrade
         # Update npm global packages
-        if command -v npm &> /dev/null; then npm update -g; fi
+        if command -v npm &> /dev/null; then
+            echo "Clearing npm cache..."
+            npm cache clean --force
+            echo "Updating npm global packages..."
+            npm update -g
+        fi
         # Update Python packages
         if command -v pip &> /dev/null; then pip list --outdated | awk '{print $1}' | xargs -n1 pip install -U; fi
         # Update Conda packages
