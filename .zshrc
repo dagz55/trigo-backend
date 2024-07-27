@@ -71,28 +71,22 @@ eval "$(zoxide init zsh)"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 # eval $(thefuck --alias)  # Commented out due to potential issues
 
-# Function to check for updates and prompt user
+# Function to check for updates
 function check_for_updates {
-    echo "Do you want to check for updates to all installed packages, software, and modules? (Y/n)"
-    read -r response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        echo "Checking for updates..."
-        # Update Homebrew packages
-        brew update && brew upgrade
-        # Update npm global packages
-        if command -v npm &> /dev/null; then
-            echo "Clearing npm cache..."
-            npm cache clean --force
-            echo "Updating npm global packages..."
-            npm update -g
-        fi
-        # Update Python packages
-        if command -v pip &> /dev/null; then pip list --outdated | awk '{print $1}' | xargs -n1 pip install -U; fi
-        # Update Conda packages
-        if command -v conda &> /dev/null; then conda update --all; fi
-    else
-        echo "Skipping updates."
+    echo "Checking for updates..."
+    # Update Homebrew packages
+    brew update && brew upgrade
+    # Update npm global packages
+    if command -v npm &> /dev/null; then
+        echo "Clearing npm cache..."
+        npm cache clean --force
+        echo "Updating npm global packages..."
+        npm update -g
     fi
+    # Update Python packages
+    if command -v pip &> /dev/null; then pip list --outdated | awk '{print $1}' | xargs -n1 pip install -U; fi
+    # Update Conda packages
+    if command -v conda &> /dev/null; then conda update --all -y; fi
 }
 # Call the function to check for updates
 check_for_updates
