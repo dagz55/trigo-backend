@@ -99,6 +99,16 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
 # Call the function to check for updates
 #check_for_updates
 
+# Function to reset terminal process
+reset_terminal() {
+    echo "Attempting to reset terminal process..."
+    kill -9 $$ 2>/dev/null || exec $SHELL
+    echo "If you're seeing this, the reset didn't work. Please try running 'exec $SHELL' manually."
+}
+
+# Alias for easy access
+alias fix_terminal='reset_terminal'
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 # [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
