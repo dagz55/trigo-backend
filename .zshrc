@@ -25,7 +25,7 @@ alias reload='source ~/.zshrc'
 bindkey -s '^r' 'source ~/.zshrc\n'
 
 # Source powerlevel10k theme
-# source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
 # Lazy loading conda
 #function __lazy_conda {
@@ -63,13 +63,17 @@ export PATH="$JAVA_HOME/bin:$PATH"
 
 # ALIASES
 alias lsh='eza -la --long --group-directories-first --icons --color=always --sort newest'
-# alias z=zoxide
+alias z=zoxide
+alias update='brew update && brew upgrade'
+alias cls='clear'
+alias ..='cd ..'
+alias ...='cd ../..'
 
 # Initialize tools
 eval "$(atuin init zsh)"
 eval "$(zoxide init zsh)"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# eval $(thefuck --alias)  # Commented out due to potential issues
+eval $(thefuck --alias)
 
 export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
   --color=fg:#d0d0d0,fg+:#d0d0d0,bg:#121212,bg+:#262626
@@ -80,24 +84,24 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
 
 # Function to check for updates
-#function check_for_updates {
-#    echo "Checking for updates..."
-#    # Update Homebrew packages
-#    brew update && brew upgrade
-#    # Update npm global packages
-#    # if command -v npm &> /dev/null; then
-#    #    echo "Clearing npm cache..."
-#    #    npm cache clean --force
-#    #    echo "Updating npm global packages..."
-#    #    npm update -g
-#    # fi
-#    # Update Python packages
-#    # if command -v pip &> /dev/null; then pip list --outdated | awk '{print $1}' | xargs -n1 pip install -U; fi
-#    # Update Conda packages
-#    # if command -v conda &> /dev/null; then conda update --all -y; fi
-#}
-# Call the function to check for updates
-#check_for_updates
+function check_for_updates {
+    echo "Checking for updates..."
+    # Update Homebrew packages
+    brew update && brew upgrade
+    # Update Python packages
+    if command -v pip &> /dev/null; then
+        echo "Updating pip packages..."
+        pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
+    fi
+    # Update Conda packages
+    if command -v conda &> /dev/null; then
+        echo "Updating Conda packages..."
+        conda update --all -y
+    fi
+}
+
+# Alias for easy update
+alias update_all='check_for_updates'
 
 # Function to reset terminal process
 reset_terminal() {
