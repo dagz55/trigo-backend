@@ -1,19 +1,26 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+# Basic PATH setup
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
-    . "$HOME/google-cloud-sdk/path.zsh.inc" 
-fi
+# Debug function
+debug_zsh_startup() {
+    echo "Debug information:"
+    echo "SHELL: $SHELL"
+    echo "PATH: $PATH"
+    echo "Current directory: $(pwd)"
+    echo "User: $(whoami)"
+    echo "ZSH version: $ZSH_VERSION"
+}
 
-# The next line enables shell command completion for gcloud.
-if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
-    . "$HOME/google-cloud-sdk/completion.zsh.inc" 
-fi
+# Uncomment the line below to run debug on startup
+# debug_zsh_startup
+
+# Google Cloud SDK setup (commented out for now)
+# if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
+#     . "$HOME/google-cloud-sdk/path.zsh.inc" 
+# fi
+# if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
+#     . "$HOME/google-cloud-sdk/completion.zsh.inc" 
+# fi
 
 # Alias to reload .zshrc
 alias reload='source ~/.zshrc'
@@ -65,20 +72,21 @@ alias cls='clear'
 alias ..='cd ..'
 alias ...='cd ../..'
 
-# Initialize tools
-eval "$(atuin init zsh)"
-eval "$(zoxide init zsh)"
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-eval $(thefuck --alias)
+# Initialize tools (commented out for troubleshooting)
+# eval "$(atuin init zsh)"
+# eval "$(zoxide init zsh)"
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# eval $(thefuck --alias)
 
-export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
-  --color=fg:#d0d0d0,fg+:#d0d0d0,bg:#121212,bg+:#262626
-  --color=hl:#5f87af,hl+:#5fd7ff,info:#afaf87,marker:#87ff00
-  --color=prompt:#d7005f,spinner:#af5fff,pointer:#af5fff,header:#87afaf
-  --color=border:#262626,label:#aeaeae,query:#d9d9d9
-  --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="> "
-  --marker=">" --pointer="◆" --separator="─" --scrollbar="│"
-  --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
+# FZF configuration (commented out for now)
+# export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
+#   --color=fg:#d0d0d0,fg+:#d0d0d0,bg:#121212,bg+:#262626
+#   --color=hl:#5f87af,hl+:#5fd7ff,info:#afaf87,marker:#87ff00
+#   --color=prompt:#d7005f,spinner:#af5fff,pointer:#af5fff,header:#87afaf
+#   --color=border:#262626,label:#aeaeae,query:#d9d9d9
+#   --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="> "
+#   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"
+#   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
 
 # Function to check for updates
 function check_for_updates {
@@ -144,9 +152,10 @@ alias fix_terminal='reset_terminal'
 
 
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Powerlevel10k configuration (commented out for troubleshooting)
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
-# Source powerlevel10k theme
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
+# Basic prompt setup
+PS1='%n@%m %~ %# '
 
