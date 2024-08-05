@@ -80,30 +80,32 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
 
 # Function to check for updates
-# function check_for_updates {
-    # echo "Checking for updates..."
+function check_for_updates {
+    echo "Checking for updates..."
     # Update Homebrew packages
-    # brew update && brew upgrade
+    if command -v brew &> /dev/null; then
+        echo "Updating Homebrew packages..."
+        brew update && brew upgrade
+    fi
     # Update Python packages
-    # if command -v pip &> /dev/null; then
-    #     echo "Updating pip packages..."
-    #     pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
-    # fi
+    if command -v pip &> /dev/null; then
+        echo "Updating pip packages..."
+        pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
+    fi
     # Update Conda packages
-    # if command -v conda &> /dev/null; then
-    #    echo "Updating Conda packages..."
-    #    conda update --all -y
-    # fi
-# }
+    if command -v conda &> /dev/null; then
+       echo "Updating Conda packages..."
+       conda update --all -y
+    fi
+}
 
 # Alias for easy update
-# alias update_all='check_for_updates'
+alias update_all='check_for_updates'
 
 # Function to reset terminal process
 reset_terminal() {
-    echo "Attempting to reset terminal process..."
-    kill -9 $$ 2>/dev/null || exec $SHELL
-    echo "If you're seeing this, the reset didn't work. Please try running 'exec $SHELL' manually."
+    echo "Resetting terminal process..."
+    exec $SHELL
 }
 
 # Alias for easy access
