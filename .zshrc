@@ -5,9 +5,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# Use the powerlevel10k theme
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
     . "$HOME/google-cloud-sdk/path.zsh.inc" 
@@ -23,9 +20,6 @@ alias reload='source ~/.zshrc'
 
 # Bind Ctrl + R to reload .zshrc
 bindkey -s '^r' 'source ~/.zshrc\n'
-
-# Source powerlevel10k theme
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
 # Lazy loading conda
 #function __lazy_conda {
@@ -119,4 +113,7 @@ alias fix_terminal='reset_terminal'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Source powerlevel10k theme
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
