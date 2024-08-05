@@ -89,15 +89,15 @@ function check_for_updates {
         brew update && brew upgrade
     fi
     # Update Python packages
-    if command -v pip &> /dev/null; then
-        echo "Updating pip packages..."
-        pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
-    fi
+    # if command -v pip &> /dev/null; then
+    #     echo "Updating pip packages..."
+    #     pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
+    # fi
     # Update Conda packages
-    if command -v conda &> /dev/null; then
-       echo "Updating Conda packages..."
-       conda update --all -y
-    fi
+    # if command -v conda &> /dev/null; then
+    #    echo "Updating Conda packages..."
+    #    conda update --all -y
+    # fi
 }
 
 # Alias for easy update
