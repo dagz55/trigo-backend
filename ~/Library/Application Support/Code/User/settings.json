@@ -1,0 +1,10 @@
+{
+    "terminal.integrated.defaultProfile.osx": "zsh",
+    "terminal.integrated.env.osx": {
+        "PATH": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:${env:PATH}"
+    },
+    "terminal.integrated.shellArgs.osx": ["-l"],
+    "terminal.integrated.cwd": "${workspaceFolder}",
+    "terminal.integrated.inheritEnv": true,
+    "terminal.integrated.automationShell.osx": "zsh"
+}
