@@ -7,6 +7,17 @@
     "terminal.integrated.cwd": "${workspaceFolder}",
     "terminal.integrated.inheritEnv": true,
     "terminal.integrated.automationShell.osx": "zsh",
+    "terminal.integrated.profiles.osx": {
+        "zsh": {
+            "path": "/bin/zsh",
+            "args": ["-l"]
+        }
+    },
+    "terminal.integrated.env.osx": {
+        "SHELL": "/bin/zsh"
+    },
+    "terminal.integrated.gpuAcceleration": "off",
+    "terminal.integrated.rendererType": "dom",
     "extensions.autoUpdate": false,
     "extensions.autoCheckUpdates": false,
     "telemetry.telemetryLevel": "off",
