@@ -112,6 +112,15 @@ reset_terminal() {
 # Alias for easy access
 alias fix_terminal='reset_terminal'
 
+# Function to reset terminal process
+reset_terminal() {
+    echo "Resetting terminal process..."
+    exec $SHELL
+}
+
+# Alias for easy access
+alias fix_terminal='reset_terminal'
+
 
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
