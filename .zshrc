@@ -106,11 +106,32 @@ alias update_all='check_for_updates'
 # Function to reset terminal process
 reset_terminal() {
     echo "Resetting terminal process..."
-    exec $SHELL
+    # Ensure PATH includes common locations
+    export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+    # Reset SHELL if it's not set correctly
+    export SHELL=$(which zsh)
+    # Clear any potentially problematic environment variables
+    unset ZDOTDIR
+    # Re-execute the shell
+    exec $SHELL -l
 }
 
 # Alias for easy access
 alias fix_terminal='reset_terminal'
+
+# Debug function for VS Code terminal
+vscode_terminal_debug() {
+    echo "Debugging VS Code terminal launch..."
+    echo "SHELL: $SHELL"
+    echo "PATH: $PATH"
+    echo "Current directory: $(pwd)"
+    echo "User: $(whoami)"
+    echo "ZSH version: $ZSH_VERSION"
+    echo "Terminal program: $TERM_PROGRAM"
+}
+
+# Alias for easy debugging
+alias debug_vscode_terminal='vscode_terminal_debug'
 
 # Function to reset terminal process
 reset_terminal() {
