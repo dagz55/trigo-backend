@@ -58,12 +58,14 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 export JAVA_HOME="/opt/homebrew/opt/openjdk"
 export PATH="$JAVA_HOME/bin:$PATH"
 
+# Spoof-DPI 
+export PATH=$PATH:~/.spoof-dpi/bin
+
 # Update Homebrew
 #brew update
 
 # ALIASES
 alias lsh='eza -la --long --group-directories-first --icons --color=always --sort newest'
-alias z=zoxide
 alias update='brew update && brew upgrade'
 alias cls='clear'
 alias ..='cd ..'
@@ -84,24 +86,24 @@ export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
 
 # Function to check for updates
-function check_for_updates {
-    echo "Checking for updates..."
+# function check_for_updates {
+    # echo "Checking for updates..."
     # Update Homebrew packages
-    brew update && brew upgrade
+    # brew update && brew upgrade
     # Update Python packages
-    if command -v pip &> /dev/null; then
-        echo "Updating pip packages..."
-        pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
-    fi
+    # if command -v pip &> /dev/null; then
+    #     echo "Updating pip packages..."
+    #     pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
+    # fi
     # Update Conda packages
-    if command -v conda &> /dev/null; then
-        echo "Updating Conda packages..."
-        conda update --all -y
-    fi
-}
+    # if command -v conda &> /dev/null; then
+    #    echo "Updating Conda packages..."
+    #    conda update --all -y
+    # fi
+# }
 
 # Alias for easy update
-alias update_all='check_for_updates'
+# alias update_all='check_for_updates'
 
 # Function to reset terminal process
 reset_terminal() {
@@ -130,3 +132,7 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
