@@ -6,5 +6,20 @@
     "terminal.integrated.shellArgs.osx": ["-l"],
     "terminal.integrated.cwd": "${workspaceFolder}",
     "terminal.integrated.inheritEnv": true,
-    "terminal.integrated.automationShell.osx": "zsh"
+    "terminal.integrated.automationShell.osx": "zsh",
+    "extensions.autoUpdate": false,
+    "extensions.autoCheckUpdates": false,
+    "telemetry.telemetryLevel": "off",
+    "workbench.startupEditor": "none",
+    "workbench.enableExperiments": false,
+    "update.mode": "manual",
+    "update.showReleaseNotes": false,
+    "python.linting.enabled": false,
+    "python.jediEnabled": false,
+    "python.languageServer": "None",
+    "jupyter.alwaysTrustNotebooks": true,
+    "jupyter.askForKernelRestart": false,
+    "jupyter.enableCellCodeLens": false,
+    "jupyter.enablePlotViewer": false,
+    "redhat.telemetry.enabled": false
 }
