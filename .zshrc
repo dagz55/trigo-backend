@@ -1,26 +1,109 @@
-# Basic PATH setup
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
+# Console output
+echo "Welcome to Zsh!"
 
-# Debug function
-debug_zsh_startup() {
-    echo "Debug information:"
-    echo "SHELL: $SHELL"
-    echo "PATH: $PATH"
-    echo "Current directory: $(pwd)"
-    echo "User: $(whoami)"
-    echo "ZSH version: $ZSH_VERSION"
+# Set PATH variables
+export PATH="/usr/local/bin:/Users/robertsuarez/.cache/lm-studio/bin:/opt/homebrew/opt/curl/bin:/Users/robertsuarez/.local/bin:$PATH"
+export NODE_OPTIONS="--max-old-space-size=8192"
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+# ---- FZF -----
+
+# Set up fzf key bindings and fuzzy completion
+eval "$(fzf --zsh)"
+
+# -- Use fd instead of fzf --
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+# Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+# - The first argument to the function ($1) is the base path to start traversal
+# - See the source code (completion.{bash,zsh}) for the details.
+_fzf_compgen_path() {
+  fd --hidden --exclude .git . "$1"
 }
 
-# Uncomment the line below to run debug on startup
-# debug_zsh_startup
 
-# Google Cloud SDK setup (commented out for now)
-# if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
-#     . "$HOME/google-cloud-sdk/path.zsh.inc" 
-# fi
-# if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
-#     . "$HOME/google-cloud-sdk/completion.zsh.inc" 
-# fi
+# --- setup fzf theme ---
+fg="#CBE0F0"
+bg="#011628"
+bg_highlight="#143652"
+purple="#B388FF"
+blue="#06BCE4"
+cyan="#2CF9ED"
+
+export FZF_DEFAULT_OPTS="--color=fg:${fg},bg:${bg},hl:${purple},fg+:${fg},bg+:${bg_highlight},hl+:${purple},info:${blue},prompt:${cyan},pointer:${cyan},marker:${cyan},spinner:${cyan},header:${cyan}"
+
+alias ls="eza --color=always --git --icons=always --no-user --sort newest"
+
+# ----- Bat (better cat) -----
+
+export BAT_THEME=tokyonight_night
+
+show_file_or_dir_preview="if [ -d {} ]; then eza --tree --color=always {} | head -200; else bat -n --color=always --line-range :500 {}; fi"
+
+export FZF_CTRL_T_OPTS="--preview '$show_file_or_dir_preview'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+cat='alias bat'
+# Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
+_fzf_comprun() {
+  local command=$1
+  shift
+
+  case "$command" in
+    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+    export|unset) fzf --preview "eval 'echo ${}'"         "$@" ;;
+    ssh)          fzf --preview 'dig {}'                   "$@" ;;
+    *)            fzf --preview 'bat -n --color=always --line-range :500 {}' "$@" ;;esac
+}
+
+# Initialize miniconda
+eval "$(conda "shell.$(basename "${SHELL}")" hook)"
+# Initialize thefuck plus alias
+# eval $(thefuck --alias)
+eval $(thefuck --alias fk)
+
+# ---- Zoxide (better cd) ----
+eval "$(zoxide init zsh)"
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# history setup
+HISTFILE=$HOME/.zhistory
+SAVEHIST=100000
+HISTSIZE=9999
+setopt share_history
+setopt hist_expire_dups_first
+setopt hist_ignore_dups
+setopt hist_verify
+# completion using arrow keys (based on history)
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# start atuin
+eval "$(atuin init zsh)"
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+# MAIN THEME
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/robertsuarez/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/robertsuarez/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/robertsuarez/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/robertsuarez/google-cloud-sdk/completion.zsh.inc'; fi
 
 # Alias to reload .zshrc
 alias reload='source ~/.zshrc'
@@ -28,134 +111,30 @@ alias reload='source ~/.zshrc'
 # Bind Ctrl + R to reload .zshrc
 bindkey -s '^r' 'source ~/.zshrc\n'
 
-# Lazy loading conda
-#function __lazy_conda {
-#    unset -f conda
-#    __conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-#    if [ $? -eq 0 ]; then
-#        eval "$__conda_setup"
-#    else
-#        if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
-#            . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
-#        else
-#            export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
-#        fi
-#    fi
-#    unset __conda_setup
-#    conda "$@"
-#}
+source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
 
-# Alias to initialize conda lazily
-# alias conda='__lazy_conda'
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/Caskroom/miniconda/base/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/Caskroom/miniconda/base/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
 
-# Bun completions
-[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
-# Bun installation path
+# bun completions
+[ -s "/Users/robertsuarez/.bun/_bun" ] && source "/Users/robertsuarez/.bun/_bun"
+
+# bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-# Java home and path settings
-export JAVA_HOME="/opt/homebrew/opt/openjdk"
-export PATH="$JAVA_HOME/bin:$PATH"
-
-# Spoof-DPI 
-export PATH=$PATH:~/.spoof-dpi/bin
-
-# Update Homebrew
-#brew update
-
-# ALIASES
-alias lsh='eza -la --long --group-directories-first --icons --color=always --sort newest'
-alias update='brew update && brew upgrade'
-alias cls='clear'
-alias ..='cd ..'
-alias ...='cd ../..'
-
-# Initialize tools (commented out for troubleshooting)
-# eval "$(atuin init zsh)"
-# eval "$(zoxide init zsh)"
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# eval $(thefuck --alias)
-
-# FZF configuration (commented out for now)
-# export FZF_DEFAULT_OPTS=$FZF_DEFAULT_OPTS'
-#   --color=fg:#d0d0d0,fg+:#d0d0d0,bg:#121212,bg+:#262626
-#   --color=hl:#5f87af,hl+:#5fd7ff,info:#afaf87,marker:#87ff00
-#   --color=prompt:#d7005f,spinner:#af5fff,pointer:#af5fff,header:#87afaf
-#   --color=border:#262626,label:#aeaeae,query:#d9d9d9
-#   --border="rounded" --border-label="" --preview-window="border-rounded" --prompt="> "
-#   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"
-#   --marker=">" --pointer="◆" --separator="─" --scrollbar="│"'
-
-# Function to check for updates
-function check_for_updates {
-    echo "Checking for updates..."
-    # Update Homebrew packages
-    if command -v brew &> /dev/null; then
-        echo "Updating Homebrew packages..."
-        brew update && brew upgrade
-    fi
-    # Update Python packages
-    # if command -v pip &> /dev/null; then
-    #     echo "Updating pip packages..."
-    #     pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip install -U
-    # fi
-    # Update Conda packages
-    # if command -v conda &> /dev/null; then
-    #    echo "Updating Conda packages..."
-    #    conda update --all -y
-    # fi
-}
-
-# Alias for easy update
-alias update_all='check_for_updates'
-
-# Function to reset terminal process
-reset_terminal() {
-    echo "Resetting terminal process..."
-    # Ensure PATH includes common locations
-    export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
-    # Reset SHELL if it's not set correctly
-    export SHELL=$(which zsh)
-    # Clear any potentially problematic environment variables
-    unset ZDOTDIR
-    # Re-execute the shell
-    exec $SHELL -l
-}
-
-# Alias for easy access
-alias fix_terminal='reset_terminal'
-
-# Debug function for VS Code terminal
-vscode_terminal_debug() {
-    echo "Debugging VS Code terminal launch..."
-    echo "SHELL: $SHELL"
-    echo "PATH: $PATH"
-    echo "Current directory: $(pwd)"
-    echo "User: $(whoami)"
-    echo "ZSH version: $ZSH_VERSION"
-    echo "Terminal program: $TERM_PROGRAM"
-}
-
-# Alias for easy debugging
-alias debug_vscode_terminal='vscode_terminal_debug'
-
-# Function to reset terminal process
-reset_terminal() {
-    echo "Resetting terminal process..."
-    exec $SHELL
-}
-
-# Alias for easy access
-alias fix_terminal='reset_terminal'
-
-
-
-# Powerlevel10k configuration (commented out for troubleshooting)
-# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-# source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-
-# Basic prompt setup
-PS1='%n@%m %~ %# '
-
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+export JAVA_HOME=/usr/local/opt/openjdk@11
+export PATH=$JAVA_HOME/bin:$PATH
