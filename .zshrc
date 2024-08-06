@@ -47,6 +47,7 @@ export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 
 # Aliases and custom functions
 alias ls="eza --color=always --git --icons=always --no-user --sort newest"
+alias lsh='eza -la --long --group-directories-first --icons --color=always --sort newest'
 alias reload='source ~/.zshrc'
 cat='alias bat'
 
