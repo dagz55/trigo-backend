@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Check for PowerShell updates
+current_version=$(pwsh -v)
+latest_version=$(pwsh --version)
+
+if [ "$current_version" != "$latest_version" ]; then
+    echo "PowerShell update available!"
+    read -p "Do you want to update? (y/n) " response
+
+    if [ "$response" = "y" ] || [ "$response" = "yes" ]; then
+        # Update PowerShell
+        sudo apt-get install pwsh -y
+        echo "PowerShell updated to version $latest_version"
+
+    else
+        # Exit without updating
+        echo "Exiting..."
+    fi
+
+else
+    # No update available, exit with current version
+    echo "No updates available. Current version: $current_version"
+fi
