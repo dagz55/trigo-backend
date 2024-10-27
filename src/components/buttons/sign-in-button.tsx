@@ -15,6 +15,7 @@ export function SignInButton({ className }: SignInButtonProps) {
     setError(null);
 
     try {
+      console.log('Starting Azure sign-in process...');
       const currentUrl = window.location.origin;
       const tenant = '2d18ad4c-992d-4d33-9b1a-7ebc31269f89';
       const authEndpoint = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize`;
@@ -27,7 +28,9 @@ export function SignInButton({ className }: SignInButtonProps) {
         response_mode: 'fragment',
       });
 
-      window.location.href = `${authEndpoint}?${params.toString()}`;
+      const loginUrl = `${authEndpoint}?${params.toString()}`;
+      console.log('Redirecting to:', loginUrl);
+      window.location.href = loginUrl;
       
     } catch (err) {
       console.error('Sign-in error:', err);
@@ -48,9 +51,18 @@ export function SignInButton({ className }: SignInButtonProps) {
         onClick={handleSignIn}
         disabled={isLoading}
         variant="default"
-        className={`bg-[#0078D4] hover:bg-[#0078D4] text-white ${className}`}
+        className={`bg-[#0078D4] hover:bg-[#0078D4] text-white ${className} relative`}
       >
-        {isLoading ? 'SIGNING IN...' : 'SIGN IN WITH AZURE'}
+        {isLoading ? (
+          <>
+            <span className="opacity-0">SIGN IN WITH AZURE</span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
+            </div>
+          </>
+        ) : (
+          'SIGN IN WITH AZURE'
+        )}
       </Button>
     </div>
   );
