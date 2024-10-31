@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { signIn } from '@/lib/auth';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 
@@ -15,23 +16,13 @@ export function SignInButton({ className }: SignInButtonProps) {
     setError(null);
 
     try {
-      console.log('Starting Azure sign-in process...');
-      const currentUrl = window.location.origin;
-      const tenant = '2d18ad4c-992d-4d33-9b1a-7ebc31269f89';
-      const authEndpoint = `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize`;
+      console.log('Starting Azure CLI sign-in process...');
+      const result = await signIn();
       
-      const params = new URLSearchParams({
-        client_id: '04b07795-8ddb-461a-bbee-02f9e1bf7b46',
-        response_type: 'code',
-        redirect_uri: currentUrl,
-        scope: 'https://management.azure.com/.default offline_access',
-        response_mode: 'fragment',
-      });
-
-      const loginUrl = `${authEndpoint}?${params.toString()}`;
-      console.log('Redirecting to:', loginUrl);
-      window.location.href = loginUrl;
-      
+      if (result.success) {
+        console.log('Successfully signed in via Azure CLI');
+        // You might want to trigger a state update or redirect here
+      }
     } catch (err) {
       console.error('Sign-in error:', err);
       setError('Failed to connect to Azure. Please try again.');
