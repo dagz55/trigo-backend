@@ -1,37 +1,53 @@
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export const signIn = async () => {
   try {
-    const { stdout, stderr } = await execAsync('az account show');
-    if (stderr) {
-      // Not logged in, try to login
-      await execAsync('az login');
-      return { success: true };
+    const response = await fetch(`${API_BASE_URL}/azure/login`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Login failed');
     }
-    return { success: true, account: JSON.parse(stdout) };
+    
+    return await response.json();
   } catch (error) {
-    console.error('Azure CLI error:', error);
-    throw new Error('Failed to authenticate with Azure CLI');
+    console.error('Azure login error:', error);
+    throw new Error('Failed to authenticate with Azure');
   }
 }
 
 export const signOut = async () => {
   try {
-    await execAsync('az logout');
-    return { success: true };
+    const response = await fetch(`${API_BASE_URL}/azure/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      throw new Error('Logout failed');
+    }
+    
+    return await response.json();
   } catch (error) {
-    console.error('Azure CLI logout error:', error);
-    throw new Error('Failed to logout from Azure CLI');
+    console.error('Azure logout error:', error);
+    throw new Error('Failed to logout from Azure');
   }
 }
 
 export const getSession = async () => {
   try {
-    const { stdout } = await execAsync('az account show');
-    return JSON.parse(stdout);
+    const response = await fetch(`${API_BASE_URL}/azure/status`, {
+      credentials: 'include',
+    });
+    
+    if (!response.ok) {
+      return null;
+    }
+    
+    const data = await response.json();
+    return data.isConnected ? data.account : null;
   } catch (error) {
     return null;
   }
