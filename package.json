@@ -2,10 +2,10 @@
   "name": "azure-snapshot-manager",
   "version": "1.0.0",
   "description": "Azure Snapshot Manager Application",
-  "main": "src/index.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js"
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001"
   },
   "dependencies": {
     "@azure/msal-browser": "^3.23.0",
