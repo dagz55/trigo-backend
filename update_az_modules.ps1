@@ -16,10 +16,29 @@ foreach ($module in $currentModules) {
 # Clean up older versions
 Write-Host "`nCleaning up older versions..."
 foreach ($module in $currentModules) {
-    $latest = Get-InstalledModule -Name $module.Name
-    Get-InstalledModule -Name $module.Name -AllVersions | 
-        Where-Object {$_.Version -ne $latest.Version} | 
-        Uninstall-Module -Force
+    try {
+        $latest = Get-InstalledModule -Name $module.Name
+        $oldVersions = Get-InstalledModule -Name $module.Name -AllVersions | 
+            Where-Object {$_.Version -ne $latest.Version}
+        
+        foreach ($oldVersion in $oldVersions) {
+            try {
+                Write-Host "Removing $($oldVersion.Name) version $($oldVersion.Version)..."
+                Uninstall-Module -Name $oldVersion.Name -RequiredVersion $oldVersion.Version -Force -ErrorAction Stop
+            }
+            catch {
+                Write-Warning "Could not remove $($oldVersion.Name) version $($oldVersion.Version): $_"
+                # Try alternative removal method
+                $modulePath = $oldVersion.InstalledLocation
+                if (Test-Path $modulePath) {
+                    Remove-Item -Path $modulePath -Recurse -Force -ErrorAction SilentlyContinue
+                }
+            }
+        }
+    }
+    catch {
+        Write-Warning "Error cleaning up old versions of $($module.Name): $_"
+    }
 }
 
 Write-Host "`nAz module update complete!" -ForegroundColor Green
