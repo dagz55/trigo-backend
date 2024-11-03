@@ -45,4 +45,26 @@ case $comparison_result in
        fi
        ;;
     *) echo "Error comparing versions." ;;
-esac
+esac#!/bin/zsh
+
+echo "\033[36mStarting updates for PowerShell and Azure CLI...\033[0m"
+
+# Update PowerShell if installed via homebrew
+echo "\033[33mUpdating PowerShell...\033[0m"
+if brew list --formula | grep -q "powershell"; then
+    brew upgrade powershell || echo "\033[31mFailed to update PowerShell\033[0m"
+    echo "\033[32mPowerShell update completed successfully.\033[0m"
+else
+    echo "\033[31mPowerShell not found. Install it first with: brew install powershell\033[0m"
+fi
+
+# Update Azure CLI
+echo "\033[33mUpdating Azure CLI...\033[0m"
+if command -v az >/dev/null 2>&1; then
+    az upgrade --yes || echo "\033[31mFailed to update Azure CLI\033[0m"
+    echo "\033[32mAzure CLI update completed successfully.\033[0m"
+else
+    echo "\033[31mAzure CLI not found. Install it first with: brew install azure-cli\033[0m"
+fi
+
+echo "\033[32mAll updates completed!\033[0m"
