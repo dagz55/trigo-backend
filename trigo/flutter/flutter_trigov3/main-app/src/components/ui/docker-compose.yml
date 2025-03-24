@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  main-passenger:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - CONTAINER_TYPE=passenger
+      - NEXT_PUBLIC_CONTAINER_TYPE=passenger
+    volumes:
+      - ./app:/app/app
+      - ./components:/app/components
+      - ./lib:/app/lib
+      - ./public:/app/public
+    restart: always
+
+  driver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - CONTAINER_TYPE=driver
+      - NEXT_PUBLIC_CONTAINER_TYPE=driver
+    volumes:
+      - ./app:/app/app
+      - ./components:/app/components
+      - ./lib:/app/lib
+      - ./public:/app/public
+    restart: always
+
+  dispatcher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3000"
+    environment:
+      - CONTAINER_TYPE=dispatcher
+      - NEXT_PUBLIC_CONTAINER_TYPE=dispatcher
+    volumes:
+      - ./app:/app/app
+      - ./components:/app/components
+      - ./lib:/app/lib
+      - ./public:/app/public
+    restart: always
+

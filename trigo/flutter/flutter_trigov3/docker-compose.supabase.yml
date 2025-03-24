@@ -1,0 +1,86 @@
+version: "3.8"
+services:
+  supabase-db:
+    image: postgis/postgis:15-3.4-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: your-super-secret-password
+      POSTGRES_DB: postgres
+    volumes:
+      - ./supabase/data:/var/lib/postgresql/data
+      - ./supabase/init:/docker-entrypoint-initdb.d
+
+  supabase-studio:
+    image: supabase/studio:latest
+    ports:
+      - "3010:3000"
+    environment:
+      SUPABASE_URL: http://kong:8000
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: your-super-secret-password
+
+  kong:
+    image: kong:2.8.1
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl
+    volumes:
+      - ./supabase/kong:/var/lib/kong
+
+  auth:
+    image: supabase/gotrue:v2.132.3
+    ports:
+      - "9999:9999"
+    environment:
+      GOTRUE_JWT_SECRET: your-super-secret-jwt-token
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_DB_DRIVER: postgres
+      DATABASE_URL: postgres://postgres:your-super-secret-password@supabase-db:5432/postgres?sslmode=disable
+      API_EXTERNAL_URL: http://localhost:9999
+      GOTRUE_API_HOST: 0.0.0.0
+      PORT: 9999
+      GOTRUE_DISABLE_SIGNUP: "false"
+
+  rest:
+    image: postgrest/postgrest:v11.2.0
+    ports:
+      - "3020:3000"
+    environment:
+      PGRST_DB_URI: postgres://postgres:your-super-secret-password@supabase-db:5432/postgres
+      PGRST_DB_SCHEMA: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: your-super-secret-jwt-token
+    depends_on:
+      - supabase-db
+
+  realtime:
+    image: supabase/realtime:v2.25.22
+    ports:
+      - "4000:4000"
+    environment:
+      DB_HOST: supabase-db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: your-super-secret-password
+      DB_NAME: postgres
+      PORT: 4000
+      JWT_SECRET: your-super-secret-jwt-token
+    depends_on:
+      - supabase-db
+
+  meta:
+    image: supabase/postgres-meta:v0.68.0
+    ports:
+      - "8080:8080"
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: supabase-db
+      PG_META_DB_PASSWORD: your-super-secret-password
+    depends_on:
+      - supabase-db 

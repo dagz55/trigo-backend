@@ -1,0 +1,457 @@
+/* RideBooking Component Styles */
+.ride-booking-container {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Progress Bar */
+.booking-progress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.booking-progress::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #e5e7eb;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.progress-step {
+  position: relative;
+  z-index: 2;
+  background-color: #ffffff;
+  padding: 0.75rem;
+  border-radius: 50px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+}
+
+.progress-step.active {
+  color: #ffffff;
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+/* Form Elements */
+.ride-booking-step {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.form-group input, 
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.form-group input:focus, 
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Location suggestions */
+.location-suggestions {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  margin-top: 0.25rem;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.location-suggestions li {
+  padding: 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.location-suggestions li:last-child {
+  border-bottom: none;
+}
+
+.location-suggestions li:hover {
+  background-color: #f9fafb;
+}
+
+.popular-tag {
+  font-size: 0.75rem;
+  background-color: #ecfdf5;
+  color: #047857;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2rem;
+}
+
+/* Fare estimate */
+.fare-estimate {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.fare-estimate h3 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.fare-estimate .fare {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.fare-estimate .fare-note {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* TODA selection section */
+.toda-selection-section {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.selected-toda {
+  background-color: #f0f9ff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid #0284c7;
+  margin-bottom: 1.5rem;
+}
+
+.selected-toda h3 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #0369a1;
+}
+
+.toda-detail {
+  font-size: 0.875rem;
+}
+
+.toda-detail p {
+  margin-bottom: 0.25rem;
+}
+
+/* NearbyTODAs Component */
+.nearby-todas {
+  margin-bottom: 1.5rem;
+}
+
+.nearby-todas h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #374151;
+}
+
+.nearby-todas .subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.toda-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.toda-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.toda-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.toda-info {
+  flex: 1;
+}
+
+.toda-info h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem 0;
+  color: #111827;
+}
+
+.toda-area {
+  font-size: 0.8125rem;
+  color: #4b5563;
+  margin: 0 0 0.25rem 0;
+}
+
+.toda-distance {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem 0;
+}
+
+.toda-drivers {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin: 0.25rem 0 0 0;
+}
+
+.toda-drivers.available {
+  color: #059669;
+}
+
+.toda-drivers.unavailable {
+  color: #dc2626;
+}
+
+.select-toda-btn {
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.select-toda-btn:hover {
+  background-color: #4338ca;
+}
+
+.select-toda-btn:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.nearby-todas.loading,
+.nearby-todas.error,
+.nearby-todas.empty {
+  padding: 1.5rem;
+  text-align: center;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.5rem;
+}
+
+.loading-spinner {
+  margin: 1rem auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #e5e7eb;
+  border-top-color: #4f46e5;
+  animation: spin 1s linear infinite;
+}
+
+.error-message {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Radio buttons */
+.radio-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  width: auto;
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+/* Button styles */
+.button-group {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.primary-button, .secondary-button {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  text-align: center;
+}
+
+.primary-button {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border: none;
+}
+
+.primary-button:hover {
+  background-color: #4338ca;
+}
+
+.primary-button:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
+.secondary-button:hover {
+  background-color: #e5e7eb;
+}
+
+/* Booking summary */
+.booking-summary {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.booking-summary h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #374151;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.summary-item .label {
+  color: #6b7280;
+}
+
+.summary-item .value {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* Confirmation step */
+.confirmation-step {
+  text-align: center;
+}
+
+.success-animation {
+  margin: 0 auto 1.5rem;
+}
+
+.checkmark-circle {
+  width: 80px;
+  height: 80px;
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50%;
+  background-color: #4ade80;
+}
+
+.checkmark {
+  border-radius: 5px;
+}
+
+.checkmark:after {
+  content: '';
+  display: block;
+  width: 30px;
+  height: 60px;
+  border: solid white;
+  border-width: 0 6px 6px 0;
+  position: absolute;
+  left: 28px;
+  top: 8px;
+  transform: rotate(45deg);
+}
+
+.confirmation-details {
+  margin-bottom: 1.5rem;
+}
+
+.confirmation-details p {
+  margin-bottom: 0.75rem;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} 

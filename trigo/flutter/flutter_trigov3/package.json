@@ -1,0 +1,33 @@
+{
+  "dependencies": {
+    "@types/react": "^19.0.11",
+    "@types/react-dom": "^19.0.4",
+    "date-fns": "3.0.0",
+    "firebase": "^11.5.0",
+    "firebase-admin": "^13.2.0",
+    "geofirestore": "^5.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.24",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "scripts": {
+    "dev": "docker-compose up -d",
+    "dev:detached": "docker-compose up -d",
+    "build": "tsc",
+    "start:toda": "ts-node addTodaData.ts",
+    "fix:toda": "ts-node updateTodaStructure.ts",
+    "geo:toda": "ts-node updateTodaWithGeoData.ts",
+    "test:toda": "ts-node testTodaSearch.ts"
+  },
+  "name": "app",
+  "version": "1.0.0",
+  "description": "A comprehensive ride service platform divided into three containerized applications serving different user types: passengers, drivers, and dispatchers.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

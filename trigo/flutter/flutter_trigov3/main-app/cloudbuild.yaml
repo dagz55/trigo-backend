@@ -1,0 +1,35 @@
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/main-app:$COMMIT_SHA', '.']
+  
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/main-app:$COMMIT_SHA']
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'main-app'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/main-app:$COMMIT_SHA'
+      - '--region'
+      - '${_REGION}'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '3000'
+      - '--set-env-vars'
+      - 'REACT_APP_API_URL=${_API_URL},REACT_APP_AUTH_URL=${_AUTH_URL}'
+
+substitutions:
+  _REGION: us-central1  # default region
+  _API_URL: https://api.trigo.com
+  _AUTH_URL: https://auth.trigo.com
+
+images:
+  - 'gcr.io/$PROJECT_ID/main-app:$COMMIT_SHA' 
