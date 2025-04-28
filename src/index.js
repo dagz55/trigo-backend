@@ -1,47 +1,57 @@
+require('dotenv').config();
 const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');
-const morgan = require('morgan');
 const helmet = require('helmet');
-const apiRouter = require('./routes/api');
+const morgan = require('morgan');
 
+// Initialize Express app
 const app = express();
-const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.NODE_ENV === 'production' 
+      ? ['https://passenger.trigo.com', 'https://driver.trigo.com', 'https://dispatcher.trigo.com'] 
+      : '*',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    credentials: true
+  }
+});
 
 // Middleware
 app.use(helmet());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3001',
-  methods: ['GET', 'POST'],
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://passenger.trigo.com', 'https://driver.trigo.com', 'https://dispatcher.trigo.com'] 
+    : '*',
   credentials: true
 }));
 app.use(morgan('dev'));
 app.use(express.json());
 
-// Routes
-app.use('/api', apiRouter);
+// Health check
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
-// Root endpoint with API documentation
+// Root endpoint - API information
 app.get('/', (req, res) => {
-  res.json({
-    message: 'Azure Snapshot Manager API',
+  res.status(200).json({
+    name: 'TriGo API Server',
     version: '1.0.0',
+    description: 'Backend API for TriGo ride-hailing service',
     endpoints: {
-      '/api/azure/status': 'Get Azure connection status',
-      '/api/azure/login': 'Initiate Azure CLI login',
-      '/api/azure/logout': 'Logout from Azure CLI'
+      health: '/health'
     }
   });
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
-  });
-});
+// Start server
+const PORT = process.env.PORT || 3002;
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+server.listen(PORT, () => {
+  console.log(`⚡️ TriGo API Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`API Documentation available at root endpoint: http://localhost:${PORT}/`);
 });
