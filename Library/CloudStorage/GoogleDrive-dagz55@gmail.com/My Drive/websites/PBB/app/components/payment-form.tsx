@@ -27,9 +27,9 @@ export default function PaymentForm({ total, onBack, onComplete }: PaymentFormPr
   const [paymentMethod, setPaymentMethod] = useState("card")
   const [formData, setFormData] = useState({
     name: "",
-    address: "",
-    city: "",
-    phone: "",
+    address: "19 Rose of Heaven Drive, Periwinkle St., Talon Village, Talon 4, 1747, Las Piñas City",
+    city: "Las Piñas City", // Assuming city based on address
+    phone: "+63 9171841002",
     email: "",
   })
 
