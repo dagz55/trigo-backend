@@ -1,66 +1,78 @@
-# 🗂️ Sort Files Script 🚀
+# TriGo Backend
 
-## 📁 Overview
+Backend server and utilities for the TriGo ride-hailing platform.
 
-Welcome to the Sort Files Script! This nifty little Python tool helps you organize your files with ease and style. 😎
+## Overview
 
-## 🌟 Features
+This repository contains the backend server and utilities for the TriGo ride-hailing platform. It includes the following components:
 
-- 📊 Lists all non-hidden files in the current directory
-- 🗃️ Creates a new directory for sorted files
-- 🚚 Moves files to the new directory
-- 📝 Logs operations (optional)
+- Backend API Server (Node.js/Express)
+- Utility scripts for development and deployment
+- Configuration files
 
-## 🚀 How to Use
+## Directory Structure
 
-1. 🖥️ Run the script: `python sort_files.py`
-2. 👀 Review the list of files
-3. ✅ Confirm if you want to move the files
-4. 🎉 Enjoy your newly organized directory!
-
-## 📌 Note
-
-- 🙈 Hidden files (starting with '.') are excluded
-- 📂 The new directory is named "sorted_files"
-- 📜 If you choose not to move files, a log file is created
-
-## 🛠️ Requirements
-
-- Python 3.x
-- Standard libraries: os, shutil
-
-Happy organizing! 🎊🗂️🎊
-# WFH Automation
-
-This project automates the process of sending Work From Home (WFH) sign-in and sign-out emails based on a predefined work schedule.
-
-## Features
-
-- Customizable work schedule
-- Automated sign-in and sign-out emails
-- Timezone support
-- Easy to enable/disable automation
+```
+/
+|-- scripts/                  # Utility scripts for development and deployment
+|   |-- start_servers.py      # Script to start all servers
+|-- src/                      # Source code for the backend server
+|-- config/                   # Configuration files
+|-- docs/                     # Documentation
+|-- .env.example              # Example environment variables
+|-- README.md                 # This file
+```
 
 ## Setup
 
-1. Clone the repository
-2. Install required packages: `pip install -r requirements.txt`
-3. Update the email configuration in `send_daily_email.py`
-4. Run the script: `python send_daily_email.py`
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/dagz55/trigo-backend.git
+   cd trigo-backend
+   ```
 
-## Configuration
+2. Install dependencies:
+   ```bash
+   cd src
+   npm install
+   ```
 
-You can modify the following variables in `send_daily_email.py`:
+3. Create a `.env` file based on `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
 
-- `WORK_DAYS`: List of work days
-- `SIGN_IN_TIME`: Daily sign-in time
-- `SIGN_OUT_TIME`: Daily sign-out time
-- `AUTOMATION_ENABLED`: Set to `True` to enable automation, `False` to disable
+4. Start the servers:
+   ```bash
+   python3 scripts/start_servers.py
+   ```
+
+## Starting the Servers
+
+The `start_servers.py` script starts all three TriGo servers:
+
+1. Backend API Server (project directory) - Port 3002
+2. Passenger Web App (temp directory) - Port 3000
+3. Trider/Monitoring App (monitoring-app-trigo directory) - Port 3001
+
+Features of the script:
+
+- Detects and kills existing processes using the required ports
+- Prompts for user confirmation before taking actions
+- Handles error detection and provides clear logging
+- Ensures proper shutdown of all servers
+- Automatically installs dependencies if needed
+- Creates .env files from examples if needed
+- Monitors and restarts crashed servers
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/my-feature`
+5. Submit a pull request
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
+MIT
